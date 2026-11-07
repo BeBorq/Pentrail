@@ -1,0 +1,24 @@
+Pentrail
+Copyright (c) 2026 Pentrail contributors. Licensed under the MIT License (see LICENSE).
+
+Binaries of Pentrail are statically linked with third-party code. Their
+license texts are reproduced in THIRD-PARTY-NOTICES.txt and, in binary
+packages, in the licenses/ directory:
+
+- The Go standard library and runtime (https://go.dev), including the
+  golang.org/x packages vendored in it — BSD 3-Clause License.
+- github.com/creack/pty — MIT License (Linux build).
+- github.com/mattn/go-sqlite3 — MIT License; includes SQLite, which is in the
+  public domain (unencrypted development builds only; not linked into the
+  SQLCipher release binaries).
+- github.com/mutecomm/go-sqlcipher/v4 — includes code from go-sqlite3 (MIT
+  License), SQLCipher by Zetetic LLC (BSD-style license), SQLite (public
+  domain) and LibTomCrypt (public domain / The Unlicense).
+- github.com/Microsoft/go-winio — MIT License (Windows build).
+- golang.org/x/sys — BSD 3-Clause License.
+- The C runtime linked by `zig cc`: musl libc (MIT License) in the Linux
+  binary and mingw-w64 runtime libraries in the Windows binary; their license
+  texts are copied verbatim from the Zig installation into licenses/ by
+  release/build_release.py.
+
+Pentrail is not affiliated with or endorsed by any of these projects.

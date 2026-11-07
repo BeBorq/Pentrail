@@ -1,0 +1,17 @@
+[
+  {
+    "pending_bytes": 0,
+    "unattributed_input": 0,
+    "recoveries": 0,
+    "privacy_version": "masked-v3",
+    "redacted_bytes": 63,
+    "id": 1,
+    "started_ms": 1793250983685,
+    "ended_ms": 1793250984922,
+    "shell": "cmd.exe",
+    "host": "native-test",
+    "version": "test",
+    "commands": 3,
+    "raw_bytes": 676
+  }
+]

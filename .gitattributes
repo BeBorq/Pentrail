@@ -1,0 +1,14 @@
+# Keep every file byte-for-byte as committed on all platforms: no line-ending
+# conversion anywhere. Authored text (Go, JavaScript, HTML, Markdown, YAML,
+# Python, shell) is committed with LF line endings.
+#
+# Deliberate exceptions that contain CR LF and must stay exactly as they are:
+# - internal/capture/testdata/**: byte-exact native Windows console traces
+#   (raw.bin, screen.bin), their SHA256.json manifests (UTF-8 with BOM, CRLF)
+#   and fifty-cases.json; the tests replay and hash these bytes;
+# - internal/hooks/powershell.ps1: the PowerShell hook embedded in the binary
+#   and delivered to Windows shells; kept CRLF so the shipped hook is unchanged.
+* -text
+
+*.png  binary
+*.bin  binary

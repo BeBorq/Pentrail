@@ -1,0 +1,406 @@
+{
+  "powershell": [
+    {
+      "expression": "2+3",
+      "value": "5"
+    },
+    {
+      "expression": "9-4",
+      "value": "5"
+    },
+    {
+      "expression": "6*7",
+      "value": "42"
+    },
+    {
+      "expression": "81/9",
+      "value": "9"
+    },
+    {
+      "expression": "17%5",
+      "value": "2"
+    },
+    {
+      "expression": "[math]::Pow(2,8)",
+      "value": "256"
+    },
+    {
+      "expression": "[math]::Sqrt(144)",
+      "value": "12"
+    },
+    {
+      "expression": "[math]::Abs(-23)",
+      "value": "23"
+    },
+    {
+      "expression": "[math]::Max(12,34)",
+      "value": "34"
+    },
+    {
+      "expression": "[math]::Min(12,34)",
+      "value": "12"
+    },
+    {
+      "expression": "'alpha'.ToUpper()",
+      "value": "ALPHA"
+    },
+    {
+      "expression": "'BRAVO'.ToLower()",
+      "value": "bravo"
+    },
+    {
+      "expression": "'delta'.Length",
+      "value": "5"
+    },
+    {
+      "expression": "'abcdef'.Substring(2,3)",
+      "value": "cde"
+    },
+    {
+      "expression": "'one-two'.Replace('-','_')",
+      "value": "one_two"
+    },
+    {
+      "expression": "'  trim  '.Trim()",
+      "value": "trim"
+    },
+    {
+      "expression": "(('a,b,c' -split ',') -join ':')",
+      "value": "a:b:c"
+    },
+    {
+      "expression": "(('x','y','z') -join '-')",
+      "value": "x-y-z"
+    },
+    {
+      "expression": "'file.txt'.EndsWith('.txt')",
+      "value": "True"
+    },
+    {
+      "expression": "'abc'.StartsWith('a')",
+      "value": "True"
+    },
+    {
+      "expression": "('hello' -match '^h.*o$')",
+      "value": "True"
+    },
+    {
+      "expression": "([string]::Join(',',(1..4)))",
+      "value": "1,2,3,4"
+    },
+    {
+      "expression": "((3,1,2|Sort-Object)-join ',')",
+      "value": "1,2,3"
+    },
+    {
+      "expression": "((1..5|Measure-Object -Sum).Sum)",
+      "value": "15"
+    },
+    {
+      "expression": "((2,4,6|Measure-Object -Average).Average)",
+      "value": "4"
+    },
+    {
+      "expression": "(@(1..8|Where-Object {$_ % 2 -eq 0}).Count)",
+      "value": "4"
+    },
+    {
+      "expression": "((1..3|ForEach-Object {$_*2})-join ',')",
+      "value": "2,4,6"
+    },
+    {
+      "expression": "((3,3,1,2|Sort-Object -Unique)-join ',')",
+      "value": "1,2,3"
+    },
+    {
+      "expression": "[Convert]::ToString(13,2)",
+      "value": "1101"
+    },
+    {
+      "expression": "[Convert]::ToInt32('ff',16)",
+      "value": "255"
+    },
+    {
+      "expression": "5-band 3",
+      "value": "1"
+    },
+    {
+      "expression": "5-bor 2",
+      "value": "7"
+    },
+    {
+      "expression": "5-bxor 3",
+      "value": "6"
+    },
+    {
+      "expression": "3-shl 2",
+      "value": "12"
+    },
+    {
+      "expression": "16-shr 2",
+      "value": "4"
+    },
+    {
+      "expression": "'192.0.2.10'",
+      "value": "192.0.2.10"
+    },
+    {
+      "expression": "'api.example.test'",
+      "value": "api.example.test"
+    },
+    {
+      "expression": "'https://api.example.test/login'",
+      "value": "https://api.example.test/login"
+    },
+    {
+      "expression": "'analyst@example.test'",
+      "value": "analyst@example.test"
+    },
+    {
+      "expression": "'192.0.2.10 api.example.test'",
+      "value": "192.0.2.10 api.example.test"
+    },
+    {
+      "expression": "'https://api.example.test/login 192.0.2.10'",
+      "value": "https://api.example.test/login 192.0.2.10"
+    },
+    {
+      "expression": "'198.51.100.20'",
+      "value": "198.51.100.20"
+    },
+    {
+      "expression": "'db.example.test'",
+      "value": "db.example.test"
+    },
+    {
+      "expression": "'http://db.example.test:8080/status'",
+      "value": "http://db.example.test:8080/status"
+    },
+    {
+      "expression": "'203.0.113.30'",
+      "value": "203.0.113.30"
+    },
+    {
+      "expression": "'żółć'",
+      "value": "żółć"
+    },
+    {
+      "expression": "(& {Start-Sleep -Milliseconds 350; 'DELAYED_OK'})",
+      "value": "DELAYED_OK"
+    },
+    {
+      "expression": "\"PASSWORD='Synthetic50Secret'\"",
+      "value": "PASSWORD='Synthetic50Secret'"
+    },
+    {
+      "expression": "'STDERR_OK'",
+      "value": "STDERR_OK"
+    },
+    {
+      "expression": "'FINAL_OK https://api.example.test/done 192.0.2.10'",
+      "value": "FINAL_OK https://api.example.test/done 192.0.2.10"
+    }
+  ],
+  "cmd": [
+    {
+      "expression": "2+3",
+      "value": "5"
+    },
+    {
+      "expression": "9-4",
+      "value": "5"
+    },
+    {
+      "expression": "6*7",
+      "value": "42"
+    },
+    {
+      "expression": "81/9",
+      "value": "9"
+    },
+    {
+      "expression": "17%5",
+      "value": "2"
+    },
+    {
+      "expression": "128+128",
+      "value": "256"
+    },
+    {
+      "expression": "144/12",
+      "value": "12"
+    },
+    {
+      "expression": "0-(-23)",
+      "value": "23"
+    },
+    {
+      "expression": "12+22",
+      "value": "34"
+    },
+    {
+      "expression": "34-22",
+      "value": "12"
+    },
+    {
+      "expression": "7+4",
+      "value": "11"
+    },
+    {
+      "expression": "24/2",
+      "value": "12"
+    },
+    {
+      "expression": "10/2",
+      "value": "5"
+    },
+    {
+      "expression": "50-47",
+      "value": "3"
+    },
+    {
+      "expression": "100+1",
+      "value": "101"
+    },
+    {
+      "expression": "32/2",
+      "value": "16"
+    },
+    {
+      "expression": "11+6",
+      "value": "17"
+    },
+    {
+      "expression": "9+9",
+      "value": "18"
+    },
+    {
+      "expression": "8+11",
+      "value": "19"
+    },
+    {
+      "expression": "40/2",
+      "value": "20"
+    },
+    {
+      "expression": "7*3",
+      "value": "21"
+    },
+    {
+      "expression": "44/2",
+      "value": "22"
+    },
+    {
+      "expression": "25-2",
+      "value": "23"
+    },
+    {
+      "expression": "6*4",
+      "value": "24"
+    },
+    {
+      "expression": "100/4",
+      "value": "25"
+    },
+    {
+      "expression": "13*2",
+      "value": "26"
+    },
+    {
+      "expression": "3*9",
+      "value": "27"
+    },
+    {
+      "expression": "7*4",
+      "value": "28"
+    },
+    {
+      "expression": "58/2",
+      "value": "29"
+    },
+    {
+      "expression": "90/3",
+      "value": "30"
+    },
+    {
+      "expression": "11-10",
+      "value": "1"
+    },
+    {
+      "expression": "21/3",
+      "value": "7"
+    },
+    {
+      "expression": "18/3",
+      "value": "6"
+    },
+    {
+      "expression": "4*3",
+      "value": "12"
+    },
+    {
+      "expression": "20/5",
+      "value": "4"
+    },
+    {
+      "expression": "",
+      "value": "192.0.2.10"
+    },
+    {
+      "expression": "",
+      "value": "api.example.test"
+    },
+    {
+      "expression": "",
+      "value": "https://api.example.test/login"
+    },
+    {
+      "expression": "",
+      "value": "analyst@example.test"
+    },
+    {
+      "expression": "",
+      "value": "192.0.2.10 api.example.test"
+    },
+    {
+      "expression": "",
+      "value": "https://api.example.test/login 192.0.2.10"
+    },
+    {
+      "expression": "",
+      "value": "198.51.100.20"
+    },
+    {
+      "expression": "",
+      "value": "db.example.test"
+    },
+    {
+      "expression": "",
+      "value": "http://db.example.test:8080/status"
+    },
+    {
+      "expression": "",
+      "value": "203.0.113.30"
+    },
+    {
+      "expression": "",
+      "value": "żółć"
+    },
+    {
+      "expression": "",
+      "value": "DELAYED_OK"
+    },
+    {
+      "expression": "",
+      "value": "PASSWORD='Synthetic50Secret'"
+    },
+    {
+      "expression": "",
+      "value": "STDERR_OK"
+    },
+    {
+      "expression": "",
+      "value": "FINAL_OK https://api.example.test/done 192.0.2.10"
+    }
+  ]
+}

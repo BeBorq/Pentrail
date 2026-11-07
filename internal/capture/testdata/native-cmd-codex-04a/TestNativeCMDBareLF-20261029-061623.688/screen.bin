@@ -1,0 +1,5 @@
+[?9001h[?1004h[?25l[2J[m[H]0;C:\Windows\system32\cmd.exe - chcp  65001[?25h]0;C:\Windows\system32\cmd.exe]697;native-cmd-test-token;A
+C:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir1\pentrail\internal\capture>echo LFNAT^_ONE
+]697;native-cmd-test-token;A[?25lLFNAT_ONE[6;1HC:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir1\pentrail\internal\capture>[?25h]697;native-cmd-test-token;A[?25lecho LFNAT^_END
+LFNAT_END[10;1HC:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir1\pentrail\internal\capture>[?25hexit
+[?9001l[?1004l

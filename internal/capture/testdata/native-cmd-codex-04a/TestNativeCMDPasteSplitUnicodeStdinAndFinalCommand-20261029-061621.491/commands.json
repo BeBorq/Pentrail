@@ -1,0 +1,99 @@
+[
+  {
+    "index": 0,
+    "command": "echo NAT^_ONE",
+    "cwd": "",
+    "started_ms": 1793250981754,
+    "ended_ms": 1793250981758,
+    "exit_code": -1,
+    "out_start_off": 278,
+    "out_end_off": 278,
+    "complete": false,
+    "raw_missing": 0
+  },
+  {
+    "index": 1,
+    "command": "echo NAT^_TWO",
+    "cwd": "",
+    "started_ms": 1793250981770,
+    "ended_ms": 1793250981774,
+    "exit_code": -1,
+    "out_start_off": 456,
+    "out_end_off": 456,
+    "complete": false,
+    "raw_missing": 0
+  },
+  {
+    "index": 2,
+    "command": "echo NAT^_THREE",
+    "cwd": "",
+    "started_ms": 1793250981800,
+    "ended_ms": 1793250981807,
+    "exit_code": -1,
+    "out_start_off": 646,
+    "out_end_off": 663,
+    "complete": false,
+    "raw_missing": 0
+  },
+  {
+    "index": 3,
+    "command": "echo ŻÓŁĆ^_gęślą^_ü",
+    "cwd": "",
+    "started_ms": 1793250981851,
+    "ended_ms": 1793250981854,
+    "exit_code": -1,
+    "out_start_off": 847,
+    "out_end_off": 847,
+    "complete": false,
+    "raw_missing": 0
+  },
+  {
+    "index": 4,
+    "command": "echo NAT^_P1",
+    "cwd": "",
+    "started_ms": 1793250981887,
+    "ended_ms": 1793250981894,
+    "exit_code": -1,
+    "out_start_off": 1057,
+    "out_end_off": 1071,
+    "complete": false,
+    "raw_missing": 0
+  },
+  {
+    "index": 5,
+    "command": "echo NAT^_P2",
+    "cwd": "",
+    "started_ms": 1793250981905,
+    "ended_ms": 1793250981963,
+    "exit_code": -1,
+    "out_start_off": 1311,
+    "out_end_off": 1758,
+    "complete": false,
+    "raw_missing": 0
+  },
+  {
+    "index": 6,
+    "command": "echo NAT^_FINAL",
+    "cwd": "",
+    "started_ms": 1793250981981,
+    "ended_ms": 1793250981985,
+    "exit_code": -1,
+    "out_start_off": 1935,
+    "out_end_off": 2030,
+    "complete": false,
+    "raw_missing": 0
+  },
+  {
+    "index": 7,
+    "command": "exit",
+    "cwd": "",
+    "started_ms": 1793250981989,
+    "ended_ms": 1793250982001,
+    "exit_code": -1,
+    "out_start_off": 2196,
+    "out_end_off": 2214,
+    "complete": false,
+    "raw_missing": 0,
+    "end_reason": "session_end"
+  }
+]

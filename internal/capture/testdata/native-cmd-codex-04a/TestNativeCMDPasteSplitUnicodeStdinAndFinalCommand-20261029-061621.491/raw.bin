@@ -1,0 +1,19 @@
+[?9001h[?1004h[?25l[2J[m[H]0;C:\Windows\system32\cmd.exe - chcp  65001[?25h]0;C:\Windows\system32\cmd.exe]697;*********************;A
+C:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir1\pentrail\internal\capture>echo NAT^_O]697;*********************;A[?25lNE
+NAT_ONE[6;1HC:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir1\pentrail\internal\capture>[?25h]697;*********************;A[?25lecho NAT^_TWO
+NAT_TWO[10;1HC:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir1\pentrail\internal\capture>[?25hecho NAT^_THREE
+]697;*********************;A[?25lNAT_THREE[14;1HC:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir1\pentrail\internal\capture>[?25hecho Ż]697;*********************;A[?25lÓŁĆ^_gęślą^_ü
+ŻÓŁĆ_gęślą_ü[18;1HC:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir1\pentrail\internal\capture>[?25hecho NAT^_P1
+]697;*********************;A]697;*********************;A]697;*********************;A[?25lNAT_P1[22;1HC:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir1\pentrail\internal\capture>echo NAT^_P2
+NAT_P2[26;1HC:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir1\pentrail\internal\capture>echo NAT^_P3
+NAT_P3[30;1HC:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir1\pentrail\internal\capture>[?25hs
+[29;120Hset /p V=PODAJ^_TEKST:
+PODAJ_TEKST: ]0;C:\Windows\system32\cmd.exe - set  /p V=PODAJ_TEKST: synthetic-stdin-line
+]0;C:\Windows\system32\cmd.exe]697;*********************;A
+C:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir1\pentrail\internal\capture>e
+[29;120Hecho NAT^_FINAL
+NAT_FINAL]0;C:\Windows\system32\cmd.exe - echo  NAT_FINAL
+]0;C:\Windows\system32\cmd.exe]697;*********************;A
+C:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir1\pentrail\internal\capture>e
+[29;120Hexit
+[?9001l[?1004l

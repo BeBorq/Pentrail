@@ -1,0 +1,3 @@
+raw.bin: 2214 bytes, missing=0, err=<nil>
+FAIL: command "echo NAT^_ONE" recorded but cmd never echoed it
+result: failed=true

@@ -1,0 +1,35 @@
+# Build output
+/pentrail
+/pentrail.exe
+*.exe
+*.test
+/build/
+/dist/
+/out/
+zig-cache/
+.zig-cache/
+
+# Pentrail data: never commit databases, backups, reports or logs
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+*-wal
+*-shm
+*.sqlite
+*.sqlite3
+.pentrail/
+backups/
+pentrail-report-*.html
+pentrail-session-*.json
+pentrail-session-*.csv
+*.log
+
+# Local tooling and editors
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+__pycache__/
+node_modules/

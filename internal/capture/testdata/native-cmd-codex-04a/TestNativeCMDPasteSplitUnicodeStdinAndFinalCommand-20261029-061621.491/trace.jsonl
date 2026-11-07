@@ -1,0 +1,56 @@
+{"seq":1,"t_ns":517400,"ev":"start","off":0,"rec":false,"token":"native-cmd-test-token","session_id":1}
+{"seq":2,"t_ns":80870700,"ev":"output","off":0,"rec":true,"raw":"G1s/OTAwMWgbWz8xMDA0aA=="}
+{"seq":3,"t_ns":102212600,"ev":"output","off":16,"rec":true,"raw":"G1s/MjVsG1syShtbbRtbSBtdMDtDOlxXaW5kb3dzXHN5c3RlbTMyXGNtZC5leGUgLSBjaGNwICA2NTAwMQcbWz8yNWg="}
+{"seq":4,"t_ns":139131400,"ev":"output","off":84,"rec":true,"raw":"G10wO0M6XFdpbmRvd3Ncc3lzdGVtMzJcY21kLmV4ZQc="}
+{"seq":5,"t_ns":142506200,"ev":"output","off":116,"rec":true,"raw":"G102OTc7bmF0aXZlLWNtZC10ZXN0LXRva2VuO0EH"}
+{"seq":6,"t_ns":150179800,"ev":"input","off":146,"rec":true,"raw":"ZWNobyBOQVReX08=","dec":"ZWNobyBOQVReX08="}
+{"seq":7,"t_ns":160949800,"ev":"output","off":146,"rec":true,"raw":"DQpDOlxVc2Vyc1x1c2VyMVxEb2N1bWVudHNcU3ludGhcMjAyNi0xMC0yNVxsYWJcd29ya1xmaWN0aW9uYWwtd29ya3NwYWNlMFxmaXh0dXJlLWNhcHR1cmUtZGlyMVxwZW50cmFpbFxpbnRlcm5hbFxjYXB0dXJlPmVjaG8gTkFUXl9P"}
+{"seq":8,"t_ns":165756600,"ev":"input","off":278,"rec":true,"raw":"TkUN","dec":"TkUN"}
+{"seq":9,"t_ns":165756600,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":0,"Command":"echo NAT^_ONE","Cwd":"","StartedAt":1793250981754638400,"EndedAt":0,"ExitCode":-1,"OutStartOff":278,"OutEndOff":0,"Complete":false,"EndReason":""}}
+{"seq":10,"t_ns":169968700,"ev":"output","off":278,"rec":true,"raw":"G102OTc7bmF0aXZlLWNtZC10ZXN0LXRva2VuO0EH"}
+{"seq":11,"t_ns":169968700,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":0,"Command":"echo NAT^_ONE","Cwd":"","StartedAt":1793250981754638400,"EndedAt":1793250981758850500,"ExitCode":-1,"OutStartOff":278,"OutEndOff":278,"Complete":false,"EndReason":""}}
+{"seq":12,"t_ns":176323600,"ev":"output","off":308,"rec":true,"raw":"G1s/MjVsTkUNCk5BVF9PTkUbWzY7MUhDOlxVc2Vyc1x1c2VyMVxEb2N1bWVudHNcU3ludGhcMjAyNi0xMC0yNVxsYWJcd29ya1xmaWN0aW9uYWwtd29ya3NwYWNlMFxmaXh0dXJlLWNhcHR1cmUtZGlyMVxwZW50cmFpbFxpbnRlcm5hbFxjYXB0dXJlPhtbPzI1aA=="}
+{"seq":13,"t_ns":181153400,"ev":"input","off":456,"rec":true,"raw":"ZWNobyBOQVReX1RXTw0=","dec":"ZWNobyBOQVReX1RXTw0="}
+{"seq":14,"t_ns":181153400,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":1,"Command":"echo NAT^_TWO","Cwd":"","StartedAt":1793250981770035200,"EndedAt":0,"ExitCode":-1,"OutStartOff":456,"OutEndOff":0,"Complete":false,"EndReason":""}}
+{"seq":15,"t_ns":185630400,"ev":"output","off":456,"rec":true,"raw":"G102OTc7bmF0aXZlLWNtZC10ZXN0LXRva2VuO0EH"}
+{"seq":16,"t_ns":185630400,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":1,"Command":"echo NAT^_TWO","Cwd":"","StartedAt":1793250981770035200,"EndedAt":1793250981774512200,"ExitCode":-1,"OutStartOff":456,"OutEndOff":456,"Complete":false,"EndReason":""}}
+{"seq":17,"t_ns":194986200,"ev":"output","off":486,"rec":true,"raw":"G1s/MjVsZWNobyBOQVReX1RXTw0KTkFUX1RXTxtbMTA7MUhDOlxVc2Vyc1x1c2VyMVxEb2N1bWVudHNcU3ludGhcMjAyNi0xMC0yNVxsYWJcd29ya1xmaWN0aW9uYWwtd29ya3NwYWNlMFxmaXh0dXJlLWNhcHR1cmUtZGlyMVxwZW50cmFpbFxpbnRlcm5hbFxjYXB0dXJlPhtbPzI1aA=="}
+{"seq":18,"t_ns":199006500,"ev":"input","off":646,"rec":true,"raw":"Cg==","dec":"Cg=="}
+{"seq":19,"t_ns":211991200,"ev":"input","off":646,"rec":true,"raw":"ZWNobyBOQVReX1RIUkVFDQo=","dec":"ZWNobyBOQVReX1RIUkVFDQo="}
+{"seq":20,"t_ns":211991200,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":2,"Command":"echo NAT^_THREE","Cwd":"","StartedAt":1793250981800873000,"EndedAt":0,"ExitCode":-1,"OutStartOff":646,"OutEndOff":0,"Complete":false,"EndReason":""}}
+{"seq":21,"t_ns":214183000,"ev":"output","off":646,"rec":true,"raw":"ZWNobyBOQVReX1RIUkVFDQo="}
+{"seq":22,"t_ns":218706000,"ev":"output","off":663,"rec":true,"raw":"G102OTc7bmF0aXZlLWNtZC10ZXN0LXRva2VuO0EH"}
+{"seq":23,"t_ns":218706000,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":2,"Command":"echo NAT^_THREE","Cwd":"","StartedAt":1793250981800873000,"EndedAt":1793250981807587800,"ExitCode":-1,"OutStartOff":646,"OutEndOff":663,"Complete":false,"EndReason":""}}
+{"seq":24,"t_ns":237845300,"ev":"output","off":693,"rec":true,"raw":"G1s/MjVsTkFUX1RIUkVFG1sxNDsxSEM6XFVzZXJzXHVzZXIxXERvY3VtZW50c1xTeW50aFwyMDI2LTEwLTI1XGxhYlx3b3JrXGZpY3Rpb25hbC13b3Jrc3BhY2UwXGZpeHR1cmUtY2FwdHVyZS1kaXIxXHBlbnRyYWlsXGludGVybmFsXGNhcHR1cmU+G1s/MjVo"}
+{"seq":25,"t_ns":247729100,"ev":"input","off":840,"rec":true,"raw":"ZWNobyDFu8M=","dec":"ZWNobyDFu8M="}
+{"seq":26,"t_ns":253222000,"ev":"output","off":840,"rec":true,"raw":"ZWNobyDFuw=="}
+{"seq":27,"t_ns":262846800,"ev":"input","off":847,"rec":true,"raw":"k8WBxIZeX2fEmcWbbMSFXl/DvA0=","dec":"k8WBxIZeX2fEmcWbbMSFXl/DvA0="}
+{"seq":28,"t_ns":262846800,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":3,"Command":"echo ŻÓŁĆ^_gęślą^_ü","Cwd":"","StartedAt":1793250981851728600,"EndedAt":0,"ExitCode":-1,"OutStartOff":847,"OutEndOff":0,"Complete":false,"EndReason":""}}
+{"seq":29,"t_ns":266027100,"ev":"output","off":847,"rec":true,"raw":"G102OTc7bmF0aXZlLWNtZC10ZXN0LXRva2VuO0EH"}
+{"seq":30,"t_ns":266027100,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":3,"Command":"echo ŻÓŁĆ^_gęślą^_ü","Cwd":"","StartedAt":1793250981851728600,"EndedAt":1793250981854908900,"ExitCode":-1,"OutStartOff":847,"OutEndOff":847,"Complete":false,"EndReason":""}}
+{"seq":31,"t_ns":273776000,"ev":"output","off":877,"rec":true,"raw":"G1s/MjVsw5PFgcSGXl9nxJnFm2zEhV5fw7wNCsW7w5PFgcSGX2fEmcWbbMSFX8O8G1sxODsxSEM6XFVzZXJzXHVzZXIxXERvY3VtZW50c1xTeW50aFwyMDI2LTEwLTI1XGxhYlx3b3JrXGZpY3Rpb25hbC13b3Jrc3BhY2UwXGZpeHR1cmUtY2FwdHVyZS1kaXIxXHBlbnRyYWlsXGludGVybmFsXGNhcHR1cmU+G1s/MjVo"}
+{"seq":32,"t_ns":298459100,"ev":"input","off":1057,"rec":true,"raw":"ZWNobyBOQVReX1AxDWVjaG8gTkFUXl9QMg1lY2hvIE5BVF5fUDMN","dec":"ZWNobyBOQVReX1AxDWVjaG8gTkFUXl9QMg1lY2hvIE5BVF5fUDMN"}
+{"seq":33,"t_ns":298459100,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":4,"Command":"echo NAT^_P1","Cwd":"","StartedAt":1793250981887340900,"EndedAt":0,"ExitCode":-1,"OutStartOff":1057,"OutEndOff":0,"Complete":false,"EndReason":""}}
+{"seq":34,"t_ns":301479800,"ev":"output","off":1057,"rec":true,"raw":"ZWNobyBOQVReX1AxDQo="}
+{"seq":35,"t_ns":304906600,"ev":"output","off":1071,"rec":true,"raw":"G102OTc7bmF0aXZlLWNtZC10ZXN0LXRva2VuO0EHG102OTc7bmF0aXZlLWNtZC10ZXN0LXRva2VuO0EHG102OTc7bmF0aXZlLWNtZC10ZXN0LXRva2VuO0EH"}
+{"seq":36,"t_ns":305415400,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":4,"Command":"echo NAT^_P1","Cwd":"","StartedAt":1793250981887340900,"EndedAt":1793250981894297200,"ExitCode":-1,"OutStartOff":1057,"OutEndOff":1071,"Complete":false,"EndReason":""}}
+{"seq":37,"t_ns":315734300,"ev":"output","off":1161,"rec":true,"raw":"G1s/MjVsTkFUX1AxG1syMjsxSEM6XFVzZXJzXHVzZXIxXERvY3VtZW50c1xTeW50aFwyMDI2LTEwLTI1XGxhYlx3b3JrXGZpY3Rpb25hbC13b3Jrc3BhY2UwXGZpeHR1cmUtY2FwdHVyZS1kaXIxXHBlbnRyYWlsXGludGVybmFsXGNhcHR1cmU+ZWNobyBOQVReX1AyDQpOQVRfUDIbWzI2OzFIQzpcVXNlcnNcdXNlcjFcRG9jdW1lbnRzXFN5bnRoXDIwMjYtMTAtMjVcbGFiXHdvcmtcZmljdGlvbmFsLXdvcmtzcGFjZTBcZml4dHVyZS1jYXB0dXJlLWRpcjFccGVudHJhaWxcaW50ZXJuYWxcY2FwdHVyZT5lY2hvIE5BVF5fUDMNCk5BVF9QMxtbMzA7MUhDOlxVc2Vyc1x1c2VyMVxEb2N1bWVudHNcU3ludGhcMjAyNi0xMC0yNVxsYWJcd29ya1xmaWN0aW9uYWwtd29ya3NwYWNlMFxmaXh0dXJlLWNhcHR1cmUtZGlyMVxwZW50cmFpbFxpbnRlcm5hbFxjYXB0dXJlPhtbPzI1aA=="}
+{"seq":38,"t_ns":316327400,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":5,"Command":"echo NAT^_P2","Cwd":"","StartedAt":1793250981905209200,"EndedAt":0,"ExitCode":-1,"OutStartOff":1311,"OutEndOff":0,"Complete":false,"EndReason":""}}
+{"seq":39,"t_ns":334224200,"ev":"input","off":1597,"rec":true,"raw":"c2V0IC9wIFY9UE9EQUpeX1RFS1NUOiAN","dec":"c2V0IC9wIFY9UE9EQUpeX1RFS1NUOiAN"}
+{"seq":40,"t_ns":334802400,"ev":"output","off":1597,"rec":true,"raw":"cw=="}
+{"seq":41,"t_ns":338152700,"ev":"output","off":1598,"rec":true,"raw":"DQobWzI5OzEyMEhzZXQgL3AgVj1QT0RBSl5fVEVLU1Q6DQo="}
+{"seq":42,"t_ns":346377800,"ev":"output","off":1633,"rec":true,"raw":"UE9EQUpfVEVLU1Q6IBtdMDtDOlxXaW5kb3dzXHN5c3RlbTMyXGNtZC5leGUgLSBzZXQgIC9wIFY9UE9EQUpfVEVLU1Q6IAc="}
+{"seq":43,"t_ns":370302000,"ev":"input","off":1704,"rec":true,"raw":"c3ludGhldGljLXN0ZGluLWxpbmUN","dec":"c3ludGhldGljLXN0ZGluLWxpbmUN"}
+{"seq":44,"t_ns":370806700,"ev":"output","off":1704,"rec":true,"raw":"c3ludGhldGljLXN0ZGluLWxpbmUN"}
+{"seq":45,"t_ns":373958200,"ev":"output","off":1725,"rec":true,"raw":"ChtdMDtDOlxXaW5kb3dzXHN5c3RlbTMyXGNtZC5leGUHG102OTc7bmF0aXZlLWNtZC10ZXN0LXRva2VuO0EH"}
+{"seq":46,"t_ns":374485100,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":5,"Command":"echo NAT^_P2","Cwd":"","StartedAt":1793250981905209200,"EndedAt":1793250981963366900,"ExitCode":-1,"OutStartOff":1311,"OutEndOff":1758,"Complete":false,"EndReason":""}}
+{"seq":47,"t_ns":385701600,"ev":"input","off":1788,"rec":true,"raw":"ZWNobyBOQVReX0ZJTkFMDWV4aXQN","dec":"ZWNobyBOQVReX0ZJTkFMDWV4aXQN"}
+{"seq":48,"t_ns":386231200,"ev":"output","off":1788,"rec":true,"raw":"CkM6XFVzZXJzXHVzZXIxXERvY3VtZW50c1xTeW50aFwyMDI2LTEwLTI1XGxhYlx3b3JrXGZpY3Rpb25hbC13b3Jrc3BhY2UwXGZpeHR1cmUtY2FwdHVyZS1kaXIxXHBlbnRyYWlsXGludGVybmFsXGNhcHR1cmU+ZQ=="}
+{"seq":49,"t_ns":389449800,"ev":"output","off":1909,"rec":true,"raw":"DQobWzI5OzEyMEhlY2hvIE5BVF5fRklOQUwNCk5BVF9GSU5BTA0bXTA7QzpcV2luZG93c1xzeXN0ZW0zMlxjbWQuZXhlIC0gZWNobyAgTkFUX0ZJTkFMBwobXTA7QzpcV2luZG93c1xzeXN0ZW0zMlxjbWQuZXhlBxtdNjk3O25hdGl2ZS1jbWQtdGVzdC10b2tlbjtBBwpDOlxVc2Vyc1x1c2VyMVxEb2N1bWVudHNcU3ludGhcMjAyNi0xMC0yNVxsYWJcd29ya1xmaWN0aW9uYWwtd29ya3NwYWNlMFxmaXh0dXJlLWNhcHR1cmUtZGlyMVxwZW50cmFpbFxpbnRlcm5hbFxjYXB0dXJlPmUNChtbMjk7MTIwSGV4aXQN"}
+{"seq":50,"t_ns":389996700,"ev":"note","off":0,"rec":false,"n":3}
+{"seq":51,"t_ns":392449300,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":6,"Command":"echo NAT^_FINAL","Cwd":"","StartedAt":1793250981981331100,"EndedAt":0,"ExitCode":-1,"OutStartOff":1935,"OutEndOff":0,"Complete":false,"EndReason":""}}
+{"seq":52,"t_ns":397000200,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":6,"Command":"echo NAT^_FINAL","Cwd":"","StartedAt":1793250981981331100,"EndedAt":1793250981985882000,"ExitCode":-1,"OutStartOff":1935,"OutEndOff":2030,"Complete":false,"EndReason":""}}
+{"seq":53,"t_ns":400829900,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":7,"Command":"exit","Cwd":"","StartedAt":1793250981989711700,"EndedAt":0,"ExitCode":-1,"OutStartOff":2196,"OutEndOff":0,"Complete":false,"EndReason":""}}
+{"seq":54,"t_ns":407705400,"ev":"output","off":2197,"rec":true,"raw":"ChtbPzkwMDFsG1s/MTAwNGw="}
+{"seq":55,"t_ns":411768900,"ev":"close","off":2214,"rec":false}
+{"seq":56,"t_ns":412304900,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":7,"Command":"exit","Cwd":"","StartedAt":1793250981989711700,"EndedAt":1793250982001186700,"ExitCode":-1,"OutStartOff":2196,"OutEndOff":2214,"Complete":false,"EndReason":"session_end"}}

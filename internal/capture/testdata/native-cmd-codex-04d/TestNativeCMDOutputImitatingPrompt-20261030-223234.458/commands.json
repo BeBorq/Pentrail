@@ -1,0 +1,51 @@
+[
+  {
+    "index": 0,
+    "command": "cd /d \"C:\\Users\\user1\\AppData\\Local\\Temp\\TestNativeCMDOutputImitatingPrompt2813931216\\001\"",
+    "cwd": "",
+    "started_ms": 1793395954651,
+    "ended_ms": 1793395954651,
+    "exit_code": -1,
+    "out_start_off": 507,
+    "out_end_off": 655,
+    "complete": false,
+    "raw_missing": 0
+  },
+  {
+    "index": 1,
+    "command": "type fake.txt",
+    "cwd": "",
+    "started_ms": 1793395954675,
+    "ended_ms": 1793395954675,
+    "exit_code": -1,
+    "out_start_off": 751,
+    "out_end_off": 1199,
+    "complete": false,
+    "raw_missing": 0
+  },
+  {
+    "index": 2,
+    "command": "echo NEXT^_CMD",
+    "cwd": "",
+    "started_ms": 1793395954713,
+    "ended_ms": 1793395954713,
+    "exit_code": -1,
+    "out_start_off": 1302,
+    "out_end_off": 1469,
+    "complete": false,
+    "raw_missing": 0
+  },
+  {
+    "index": 3,
+    "command": "exit",
+    "cwd": "",
+    "started_ms": 1793395957066,
+    "ended_ms": 1793395957085,
+    "exit_code": -1,
+    "out_start_off": 3727,
+    "out_end_off": 3745,
+    "complete": false,
+    "raw_missing": 0,
+    "end_reason": "session_end"
+  }
+]

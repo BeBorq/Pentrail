@@ -1,0 +1,39 @@
+[
+  {
+    "index": 0,
+    "command": "echo LFNAT^_ONE",
+    "cwd": "",
+    "started_ms": 1793250983826,
+    "ended_ms": 1793250984841,
+    "exit_code": -1,
+    "out_start_off": 267,
+    "out_end_off": 284,
+    "complete": false,
+    "raw_missing": 0
+  },
+  {
+    "index": 1,
+    "command": "echo LFNAT^_END",
+    "cwd": "",
+    "started_ms": 1793250984853,
+    "ended_ms": 1793250984858,
+    "exit_code": -1,
+    "out_start_off": 460,
+    "out_end_off": 460,
+    "complete": false,
+    "raw_missing": 0
+  },
+  {
+    "index": 2,
+    "command": "exit",
+    "cwd": "",
+    "started_ms": 1793250984886,
+    "ended_ms": 1793250984916,
+    "exit_code": -1,
+    "out_start_off": 654,
+    "out_end_off": 676,
+    "complete": false,
+    "raw_missing": 0,
+    "end_reason": "session_end"
+  }
+]

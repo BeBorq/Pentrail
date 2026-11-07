@@ -1,0 +1,3 @@
+raw.bin: 676 bytes, missing=0, err=<nil>
+FAIL: "echo LFNAT^_ONE": output range 267..284 does not contain "LFNAT_ONE": "echo LFNAT^_ONE\r\n" (missing=0 err=<nil>)
+result: failed=true

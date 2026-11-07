@@ -1,0 +1,67 @@
+[?9001h[?1004h[?25l[2J[m[H]0;C:\Windows\system32\cmd.exe - chcp  65001[?25h]0;C:\Windows\system32\cmd.exe]697;native-cmd-test-token;A]697;native-cmd-test-token;P;C:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir2\pentrail\internal\capture>
+C:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir2\pentrail\internal\capture>cd /d "C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001"
+]697;native-cmd-test-token;A]697;native-cmd-test-token;P;C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>type fake.txt
+]697;native-cmd-test-token;A]697;native-cmd-test-token;P;C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>[?25lFAKE_HEAD
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>whoami
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>net user
+FAKE_TAIL[12;1HC:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>[?25hecho NEXT^_CMD
+]697;native-cmd-test-token;A]697;native-cmd-test-token;P;C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>[?25lNEXT_CMD[15;1HC:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>[?25h[?25l[8;30;100t[H[K
+C:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir2\pentrail\internal\capture>cd /d "C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001"[K
+[K
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>type fake.txt    
+FAKE_HEAD[K
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>whoami[K
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>[K
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>net user[K
+FAKE_TAIL[K
+[K
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>echo NEXT^_CMD   
+NEXT_CMD[K
+[K
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K[16;84H[?25h[?25l[H[K
+C:\Users\user1\Documents\Synth\2026-10-25\lab\work\fictional-workspace0\fixture-capture-dir2\pentrail\internal\capture>cd /d "C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001"[K
+[K
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>type fake.txt[K
+FAKE_HEAD[K
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>whoami[K
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>[K
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>net user[K
+FAKE_TAIL[K
+[K
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>echo NEXT^_CMD[K
+NEXT_CMD[K
+[K
+C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K[15;84H[?25hecho AFTER^_RESIZE
+]697;native-cmd-test-token;A]697;native-cmd-test-token;P;C:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>[?25lAFTER_RESIZE[18;1HC:\Users\user1\AppData\Local\Temp\TestNativeCMDOutputImitatingPrompt2813931216\001>[?25hexit
+[?9001l[?1004l

@@ -1,0 +1,892 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pentrail</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2430; --line:#30363d;
+    --fg:#e6edf3; --dim:#8b949e; --accent:#58a6ff; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --ok:#3fb950; --bad:#f85149; --warn:#d29922;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,Segoe UI,Roboto,sans-serif}
+  header{padding:0 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:18px;height:50px}
+  header h1{font-size:16px;margin:0;letter-spacing:.5px}
+  header .tag{color:var(--dim);font-size:12px;flex:1}
+  .tabs{display:flex;gap:4px}
+  .tab{background:none;border:1px solid transparent;color:var(--dim);font:13px system-ui;padding:5px 12px;border-radius:6px;cursor:pointer}
+  .tab:hover{color:var(--fg)}
+  .tab.active{color:var(--fg);background:var(--panel2);border-color:var(--line)}
+  .wrap{display:flex;height:calc(100vh - 51px)}
+  aside{width:280px;border-right:1px solid var(--line);overflow:auto;flex:none}
+  main{flex:1;overflow:hidden;position:relative}
+  #timeline{height:100%;overflow:auto;padding:0 0 40px}
+  .sess{padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+  .sess:hover{background:var(--panel)}
+  .sess.active{background:var(--panel2);border-left:3px solid var(--accent);padding-left:11px}
+  .sess .id{font-weight:600}
+  .sess .meta{color:var(--dim);font-size:12px;margin-top:2px}
+  .empty,.hint{color:var(--dim);padding:24px;max-width:640px}
+  .cmd{border-bottom:1px solid var(--line)}
+  .cmd .row{display:flex;gap:12px;align-items:center;padding:8px 16px;cursor:pointer}
+  .cmd .row:hover{background:var(--panel)}
+  .badge{flex:none;font:12px var(--mono);padding:1px 7px;border-radius:10px;border:1px solid var(--line)}
+  .badge.ok{color:var(--ok);border-color:#1f6f33}
+  .badge.bad{color:var(--bad);border-color:#7a2420}
+  .badge.wait{color:var(--warn);border-color:#6b4e12}
+  .time{flex:none;color:var(--dim);font:12px var(--mono);width:92px}
+  .dur{flex:none;color:var(--dim);font:12px var(--mono);width:64px;text-align:right}
+  .cmdtext{flex:1;font:13px var(--mono);white-space:pre-wrap;word-break:break-all}
+  .cwd{flex:none;color:var(--dim);font:11px var(--mono);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .out{background:#010409;border-top:1px solid var(--line);margin:0;padding:12px 16px;display:none}
+  .cmd.open .out{display:block}
+  .out .prov{color:var(--dim);font:11px var(--mono);margin-bottom:8px;display:flex;gap:16px;flex-wrap:wrap}
+  .out pre{margin:0;font:12px/1.45 var(--mono);white-space:pre-wrap;word-break:break-all;color:#c9d1d9;max-height:420px;overflow:auto}
+  .out .none{color:var(--dim);font-style:italic}
+  .gapwarn{color:#f85149;font:11px var(--mono);margin-bottom:8px}
+  .gapwarn:empty{display:none}
+  /* What the user typed and what the terminal printed, as separate, collapsible parts. */
+  details.sec{border:1px solid var(--line);border-radius:7px;margin:0 0 10px;background:#0b0f14}
+  details.sec>summary{cursor:pointer;padding:6px 10px;font:11px var(--mono);color:var(--dim);letter-spacing:.3px;list-style-position:inside}
+  details.sec>summary:hover{color:var(--fg)}
+  details.sec[open]>summary{border-bottom:1px solid var(--line)}
+  details.sec>pre,details.sec>.body-wrap,details.sec>.chips,details.sec>.xmeta,details.sec>.prov,details.sec>.gapwarn{margin:8px 10px}
+  details.sec.user>summary{color:#79c0ff}
+  details.sec.user pre{color:#e6edf3;font:13px/1.45 var(--mono);white-space:pre-wrap;word-break:break-all;margin:8px 10px}
+  details.sec.term>summary{color:#a5d6a7}
+  details.sec.found>summary{color:#d2a8ff}
+  .xmeta{color:var(--dim);font:11px var(--mono)}
+  .nfound{flex:none;color:#d2a8ff;font:11px var(--mono);border:1px solid #3d2f5a;border-radius:10px;padding:0 7px}
+  .cmd.flash>.row{animation:flash 1.6s ease-out}
+  @keyframes flash{0%{background:#1f6feb55}100%{background:transparent}}
+  button.chip{cursor:pointer;background:none;text-align:left}
+  button.chip:hover,button.chip:focus-visible{border-color:var(--accent)}
+  .xcmd{margin-top:8px}
+  .xhead{display:flex;gap:8px;align-items:center;font:11px var(--mono);color:var(--dim);margin-bottom:6px}
+  .xcmd details.sec>summary{padding:5px 8px}
+  .xcmd pre{margin:6px 8px!important;max-height:30vh;overflow:auto;font:11px/1.4 var(--mono)!important;white-space:pre-wrap;word-break:break-all;color:#c9d1d9}
+  .xcmd .none{color:var(--dim);font-style:italic}
+  .xnav{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:6px 0;font:11px var(--mono);color:var(--dim)}
+  .xnav button,.xact button{background:var(--panel2);border:1px solid var(--line);color:var(--fg);font:11px var(--mono);border-radius:5px;padding:1px 7px;cursor:pointer}
+  .xnav button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+  .xnav button.relcmd{border-style:dashed}
+  .relnote{margin:4px 0 6px;color:#d2a8ff}
+  .xact{display:flex;gap:6px;margin-top:4px}
+  .xsrc{margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+  button.raw{background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:5px;font:11px var(--mono);padding:2px 8px;cursor:pointer}
+  button.raw:hover{border-color:var(--accent)}
+  .summary{border-bottom:1px solid var(--line);padding:12px 16px;background:var(--panel)}
+  .readerr{border:1px solid #7a2420;border-radius:6px;padding:12px 16px;margin:16px;max-width:720px;background:var(--panel)}
+  .readerr b{color:var(--bad)}
+  .readerr button{margin-top:8px;background:var(--panel2);border:1px solid var(--line);color:var(--fg);font:12px var(--mono);border-radius:5px;padding:3px 10px;cursor:pointer}
+  .summary h2{font-size:12px;color:var(--dim);margin:0 0 8px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+  .groups{display:flex;gap:10px;flex-wrap:wrap}
+  .group{border:1px solid var(--line);border-radius:7px;padding:6px 10px;min-width:120px;background:var(--panel2)}
+  .group .ghead{font:12px var(--mono);color:var(--dim);display:flex;justify-content:space-between;gap:10px;cursor:pointer}
+  .group .gcount{color:var(--fg);font-weight:600}
+  .group.hi .ghead .gcount{color:var(--ok)}
+  .group .glist{margin-top:6px;display:none;flex-direction:column;gap:2px}
+  .group.open .glist{display:flex}
+  .group .glist span{font:12px var(--mono);color:#c9d1d9;word-break:break-all}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .chip{font:11px var(--mono);padding:1px 7px;border-radius:10px;border:1px solid var(--line);color:#c9d1d9}
+  .chip .k{color:var(--dim);margin-right:5px}
+  .chip.host,.chip.port{border-color:#2d4b6e}.chip.domain,.chip.hostname{border-color:#3a5a3a}
+  .chip.url,.chip.endpoint{border-color:#5a4a7a}.chip.email{border-color:#6b5a2a}.chip.finding{border-color:#7a2d2d}
+  .chip.hi{box-shadow:inset 2px 0 0 var(--ok)}
+  .conf{color:var(--dim);font:10px var(--mono);margin-left:6px}
+  .det{color:var(--dim)}
+  .sevcrit{color:#ff6b6b}.sevhigh{color:#f85149}.sevmed{color:#d29922}.sevlow{color:#58a6ff}.sevinfo{color:var(--dim)}
+  /* graph */
+  /* The legend and the hint have their own rows; only the stage between them
+     holds the canvas, so neither covers a command band or a node. */
+  #graphpane{position:absolute;inset:0;display:none;flex-direction:column}
+  #graphpane.show{display:flex}
+  #legend{flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;padding:7px 12px;border-bottom:1px solid var(--line);background:var(--panel);font:11px var(--mono)}
+  #legend:empty{display:none}
+  #legend .lg{display:flex;align-items:center;gap:6px;color:var(--dim)}
+  #legend .dot{width:9px;height:9px;border-radius:50%;flex:none}
+  #legend .dot.low{background:none!important;border:1px dashed var(--dim);width:7px;height:7px;opacity:.8}
+  #legend .sep{width:1px;height:12px;background:var(--line)}
+  #ghint button{background:var(--panel2);border:1px solid var(--line);color:var(--fg);font:11px var(--mono);border-radius:5px;padding:2px 8px;cursor:pointer}
+  #ghint button:hover{border-color:var(--accent)}
+  #gstage{position:relative;flex:1 1 auto;min-height:0;overflow:hidden}
+  #gcanvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+  #gcanvas:focus-visible{box-shadow:inset 0 0 0 2px var(--accent)}
+  #ghint{flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding:6px 12px;border-top:1px solid var(--line);background:var(--panel);color:var(--dim);font:11px var(--mono)}
+  #gdetail{position:absolute;top:10px;right:10px;width:380px;max-width:calc(100% - 20px);max-height:calc(100% - 20px);overflow:auto;box-sizing:border-box;overflow-wrap:anywhere;background:rgba(22,27,34,.96);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font:12px var(--mono);display:none}
+  #gdetail.show{display:block}
+  @media (max-width:900px){#gdetail{top:auto;bottom:8px;left:8px;right:8px;width:auto;max-height:45%}}
+  #gdetail h3{margin:0 22px 8px 0;font-size:13px}
+  #gdetail .close{position:absolute;top:6px;right:8px;background:none;border:0;color:var(--dim);font:16px system-ui;cursor:pointer;padding:0 4px}
+  #gdetail .close:hover{color:var(--fg)}
+  #gdetail .rel{margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+  #gdetail .rel button{display:block;width:100%;text-align:left;background:none;border:0;padding:2px 0;color:#c9d1d9;font:12px var(--mono);cursor:pointer;overflow-wrap:anywhere}
+  #gdetail .rel button:hover,#gdetail .rel button:focus-visible{color:var(--accent)}
+  #gdetail .rel .et{color:var(--dim)}
+  #gdetail .ty{color:var(--dim);text-transform:uppercase;font-size:10px;letter-spacing:.5px}
+  #gdetail table{width:100%;border-collapse:collapse;margin-top:6px}
+  #gdetail td{padding:2px 0;vertical-align:top;color:#c9d1d9}
+  #gdetail td.k{color:var(--dim);padding-right:10px;white-space:nowrap}
+  #gdetail .prov{margin-top:8px;color:var(--dim);border-top:1px solid var(--line);padding-top:8px}
+  /* cleanup */
+  #cleanpane{height:100%;overflow:auto;padding:0 0 40px;display:none}
+  .clhead{padding:14px 16px;border-bottom:1px solid var(--line);background:var(--panel);color:var(--dim);font-size:13px}
+  .clhead b{color:var(--fg)}
+  .clitem{display:flex;gap:12px;align-items:flex-start;padding:10px 16px;border-bottom:1px solid var(--line)}
+  .clitem:hover{background:var(--panel)}
+  .clitem.done{opacity:.5}
+  .clitem.done .cldesc{text-decoration:line-through}
+  .clitem input{margin-top:3px;flex:none;width:16px;height:16px;cursor:pointer}
+  .clbody{flex:1;min-width:0}
+  .clcat{font:11px var(--mono);padding:1px 7px;border-radius:10px;border:1px solid var(--line);flex:none}
+  .clcat.file{border-color:#2d4b6e;color:#7aa7df}
+  .clcat.config{border-color:#6b4e12;color:#d29922}
+  .clcat.account{border-color:#7a2d2d;color:#f0806b}
+  .clcat.service{border-color:#4a3a6e;color:#b58cf0}
+  .cldesc{font-size:13px}
+  .clcmd{font:12px var(--mono);color:#c9d1d9;white-space:pre-wrap;word-break:break-all;margin-top:3px}
+  .clmeta{color:var(--dim);font:11px var(--mono);margin-top:3px}
+  /* operator notes: the operator's own annotations, never captured evidence */
+  #notespane{height:100%;overflow:auto;display:none}
+  .nhead{padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel);color:var(--dim);font-size:13px}
+  .nhead b{color:#e3b341}
+  .ntools{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line)}
+  .ntools input[type=search]{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:4px 8px;font:13px system-ui;min-width:220px}
+  .ntools label{color:var(--dim);font-size:12px;display:flex;gap:5px;align-items:center}
+  .nfilter{font:12px var(--mono);color:#e3b341;overflow-wrap:anywhere}
+  .nwrap{display:flex;min-height:calc(100% - 120px)}
+  .nlist{width:320px;flex:none;border-right:1px solid var(--line)}
+  .nrow{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);color:var(--fg);padding:8px 14px;cursor:pointer;font:13px system-ui}
+  .nrow:hover,.nrow:focus-visible{background:var(--panel)}
+  .nrow.sel{background:var(--panel2);box-shadow:inset 3px 0 0 #e3b341}
+  .nrow .nt{font-weight:600;overflow-wrap:anywhere;white-space:pre-wrap}
+  .nrow .nm{color:var(--dim);font:11px var(--mono);overflow-wrap:anywhere;margin-top:2px}
+  .nst{font:11px var(--mono);padding:0 6px;border-radius:9px;border:1px solid var(--line);margin-left:4px}
+  .nst.unsaved,.nst.saving{color:var(--warn);border-color:#6b4e12}.nst.error,.nst.conflict{color:var(--bad);border-color:#7a2420}.nst.arch{color:var(--dim)}
+  .neditor{flex:1;min-width:0;padding:14px 18px}
+  .nbadge{display:inline-block;font:11px var(--mono);color:#e3b341;border:1px dashed #9e6a03;border-radius:10px;padding:1px 8px;margin-bottom:8px}
+  .neditor label{display:block;color:var(--dim);font-size:12px;margin:8px 0 3px}
+  .neditor input,.neditor textarea{width:100%;background:var(--bg);color:var(--fg);border:1px dashed #9e6a03;border-radius:6px;padding:6px 8px;font:13px/1.45 var(--mono)}
+  .neditor textarea{min-height:220px;resize:vertical;white-space:pre-wrap}
+  .neditor input[readonly],.neditor textarea[readonly]{opacity:.65}
+  .nmask{color:var(--dim);font-size:12px;margin:8px 0}
+  .nstatus{font:12px var(--mono);margin:6px 0;color:var(--dim)}
+  .nstatus.saved{color:var(--ok)}.nstatus.error,.nstatus.conflict{color:var(--bad)}.nstatus.unsaved,.nstatus.saving{color:var(--warn)}
+  .nconflict{border:1px solid #7a2420;border-radius:6px;padding:8px;margin:6px 0}
+  .nconflict:empty{display:none}
+  .nconflict pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px var(--mono);max-height:200px;overflow:auto;margin:4px 0}
+  .nanchor{font:12px var(--mono);color:var(--dim);overflow-wrap:anywhere}
+  .neditor .xact button,.notelinks button,.ntools button{background:var(--panel2);border:1px solid var(--line);color:var(--fg);font:11px var(--mono);border-radius:5px;padding:2px 8px;cursor:pointer}
+  details.sec.notes{border-style:dashed;border-color:#9e6a03}
+  details.sec.notes>summary{color:#e3b341}
+  .notelinks{margin-top:8px;border-top:1px dashed #9e6a03;padding-top:8px;font:11px var(--mono);color:#e3b341}
+  .notelinks .nlt{display:block;color:#c9d1d9;background:none;border:0;padding:1px 0;text-align:left;cursor:pointer;overflow-wrap:anywhere;white-space:pre-wrap}
+  .notelist{margin:6px 10px;font:12px var(--mono)}
+  .notelist .notelinks{border-top:0;margin-top:0;padding-top:0}
+  .notelist .nlt{display:block;color:#c9d1d9;background:none;border:0;padding:1px 0;text-align:left;cursor:pointer;overflow-wrap:anywhere;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<header>
+  <h1>pentrail</h1>
+  <nav class="tabs">
+    <button class="tab active" data-view="timeline">Timeline</button>
+    <button class="tab" data-view="graph">Graph</button>
+    <button class="tab" data-view="cleanup">Cleanup</button>
+    <button class="tab" data-view="notes">Notes</button>
+  </nav>
+  <span class="tag" title="Captured evidence cannot be changed here; operator notes are the only thing the viewer writes">evidence read-only · operator notes editable · localhost</span>
+</header>
+<div class="wrap">
+  <aside id="sessions"><div class="empty">loading…</div></aside>
+  <main>
+    <div id="timeline"><div class="hint">Select a session on the left.</div></div>
+    <div id="graphpane">
+      <div id="legend" aria-label="Legend"></div>
+      <div id="gstage">
+        <canvas id="gcanvas" aria-label="Relationship graph: no session selected"></canvas>
+        <div id="gdetail" aria-live="polite"></div>
+      </div>
+      <div id="ghint"><span id="route-status" aria-live="polite">Time: top to bottom · drag an element or the background · wheel or pinch: zoom · double-click or Enter: relationship paths · arrow keys: select</span> <button id="graph-fit" type="button">Fit to view</button> <button id="route-reset" type="button" hidden>Show the whole topology</button></div>
+    </div>
+    <div id="cleanpane"></div>
+    <div id="notespane"></div>
+  </main>
+</div>
+<script src="/graph.js"></script>
+<script src="/artifacts.js"></script>
+<script src="/cleanup.js"></script>
+<script src="/xref.js"></script>
+<script src="/notes.js"></script>
+<script>
+const TYPE_LABEL={host:'hosts',port:'ports',hostname:'host names',domain:'domains',url:'URLs',endpoint:'endpoints',email:'e-mails',finding:'findings'};
+const TYPE_ORDER=['host','port','hostname','domain','url','endpoint','email','finding'];
+const NODE_COLORS={host:'#58a6ff',port:'#3fb950',hostname:'#56d4bb',domain:'#8b949e',url:'#a371f7',endpoint:'#db61a2',email:'#d29922',finding:'#f85149'};
+
+const fmtTime=ms=>ms?new Date(ms).toLocaleTimeString('en-GB',{hour12:false}):'—';
+const fmtDur=(a,b)=>(a&&b&&b>=a)?((b-a)<1000?(b-a)+'ms':((b-a)/1000).toFixed(2)+'s'):'';
+const fmtBytes=n=>n<1024?n+' B':(n/1024).toFixed(1)+' KB';
+function esc(s){return(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function parseDet(s){try{return s?JSON.parse(s):{};}catch(e){return{};}}
+function strip(s){return s.replace(/\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)/g,'').replace(/\x1b[@-Z\\-_]/g,'').replace(/\x1b\[[0-9;?]*[ -\/]*[@-~]/g,'').replace(/\r/g,'');}
+function detailSuffix(type,det){
+  if(type==='port'){const p=[det.service,det.product,det.version].filter(Boolean);return p.length?' '+p.join(' '):'';}
+  if(type==='endpoint'&&det.status)return ' ['+det.status+']';
+  if(type==='finding'&&det.severity)return ' ['+det.severity+']';
+  return '';
+}
+function sevClass(det){const s=(det.severity||'').toLowerCase();return{critical:'sevcrit',high:'sevhigh',medium:'sevmed',low:'sevlow',info:'sevinfo'}[s]||'';}
+
+// ---- reads with a bound (04BL) ----
+// readJSON never rejects and always settles: the request AND its body must
+// arrive within READ_TIMEOUT_MS, the status must be 2xx and the parsed data
+// must pass valid(). Errors are classified for readMessage, which explains
+// what to do without showing the token, URL, path or the response body.
+// For reads only; note writes keep their own path (notes.js), no retries.
+const READ_TIMEOUT_MS=15000;
+async function readResponse(url,parse,valid,ms=READ_TIMEOUT_MS){
+  const ctl=typeof AbortController==='function'?new AbortController():null;
+  let timer;
+  const timeout=new Promise(res=>{timer=setTimeout(()=>{res({ok:false,kind:'timeout',ms});try{ctl&&ctl.abort();}catch(e){/* already done */}},ms);});
+  const work=(async()=>{
+    let r;
+    try{r=await fetch(url,ctl?{signal:ctl.signal}:undefined);}catch(e){return{ok:false,kind:'network'};}
+    if(!r||!r.ok)return{ok:false,kind:'http',status:r?r.status:0};
+    let v;
+    try{v=await parse(r);}catch(e){return{ok:false,kind:'invalid'};}
+    if(valid&&!valid(v))return{ok:false,kind:'invalid'};
+    return{ok:true,data:v,headers:r.headers};
+  })();
+  try{return await Promise.race([work,timeout]);}finally{clearTimeout(timer);}
+}
+const readJSON=(url,valid,ms)=>readResponse(url,r=>r.json(),valid,ms);
+const isList=v=>Array.isArray(v)&&v.every(x=>x!==null&&typeof x==='object');
+// An optional read (notes): bounded too, so it can never hold back evidence.
+function bounded(p,ms,onTimeout){
+  let timer;
+  return Promise.race([Promise.resolve(p).catch(()=>onTimeout),new Promise(res=>{timer=setTimeout(()=>res(onTimeout),ms);})]).finally(()=>clearTimeout(timer));
+}
+function readMessage(r){
+  if(r.kind==='timeout')return 'The viewer did not answer within '+Math.round((r.ms||READ_TIMEOUT_MS)/1000)+' s. It may be busy or stopped. Try again; if this keeps happening, restart the viewer (pentrail open).';
+  if(r.kind==='network')return 'No connection to the Pentrail viewer: it may have stopped (or been restarted). Start it again with pentrail open (or pentrail serve) and open the link it prints.';
+  if(r.kind==='invalid')return 'The viewer sent a response that is not valid session data.';
+  const s=r.status;
+  if(s===401)return 'Access refused (401): the link of this page is no longer valid — the viewer was restarted or the link expired. Open the link printed by pentrail open (or pentrail serve) again.';
+  if(s===403)return 'The viewer refused the request (403). Open this page through the link printed by pentrail open.';
+  if(s===404)return 'Not found (404): this session may not be in the viewer\'s database. Reload the session list.';
+  if(s>=500)return 'The viewer reported an internal error (code '+s+'). Try again; if it persists, restart the viewer.';
+  return 'The viewer answered with code '+s+'.';
+}
+// An error box with Try again. retry is called only by a click; the caller
+// decides inside retry whether it is still current.
+function showReadError(container,title,r,retry){
+  const box=document.createElement('div');box.className='readerr';box.setAttribute('role','alert');
+  const t=document.createElement('b');t.textContent=title;
+  const m=document.createElement('div');m.textContent=readMessage(r);
+  const b=document.createElement('button');b.type='button';b.textContent='Try again';b.onclick=()=>retry();
+  box.append(t,m,b);container.appendChild(box);
+  return box;
+}
+
+let sessionInfo=new Map();
+let activeSession=null, activeView='timeline', graph=null;
+
+let sessionsRequest=0; // only the newest list read may fill the list
+async function loadSessions(){
+  const req=++sessionsRequest;
+  const el=document.getElementById('sessions');
+  el.innerHTML='<div class="empty">loading…</div>';
+  const r=await readJSON('/api/sessions',v=>isList(v)&&v.every(s=>typeof s.id==='number'));
+  if(req!==sessionsRequest)return;
+  if(!r.ok){el.innerHTML='';showReadError(el,'Could not load the session list',r,()=>{if(req===sessionsRequest)loadSessions();});return;}
+  const ss=r.data;
+  sessionInfo=new Map(ss.map(s=>[s.id,s]));
+  if(!ss.length){el.innerHTML='<div class="empty">No sessions. Run <code>pentrail start</code>.</div>';return;}
+  el.innerHTML='';
+  for(const s of ss){
+    const d=document.createElement('div');d.className='sess'+(s.id===activeSession?' active':'');d.dataset.id=s.id;
+    d.innerHTML=`<div class="id">session ${s.id} · ${esc(s.shell)||'?'}</div><div class="meta">${fmtTime(s.started_ms)} · ${s.commands} cmd · ${fmtBytes(s.raw_bytes)}</div>`;
+    d.onclick=()=>{activeSession=s.id;document.querySelectorAll('.sess').forEach(n=>n.classList.toggle('active',n===d));renderActive();};
+    el.appendChild(d);
+  }
+}
+
+function renderActive(){ if(activeSession==null)return; if(activeView==='timeline')renderTimeline(); else if(activeView==='graph')renderGraph(); else if(activeView==='notes')renderNotes(); else renderCleanup(); }
+// ---- operator notes (notes.js) ----
+// Notes are the operator's annotations, kept in the encrypted database; they
+// are never captured evidence. Drafts live only in this page's memory. A save
+// belongs to its draft, not to what is on screen: switching session, anchor or
+// view never drops or redirects it, and a late reply only repaints the editor
+// when that same draft is still the one shown.
+const noteApi=pentrailNotes.api(fetch);
+const noteDrafts=pentrailNotes.drafts({api:noteApi,onChange:noteChanged});
+window.addEventListener('beforeunload',e=>noteDrafts.beforeUnload(e));
+let notesView={session:null,anchor:null,anchorLabel:'',query:'',archived:false};
+const notesSelected=new Map(); // session -> key of the draft shown in the editor
+let notesRequest=0,notesEditorKey=null,notesAnchorOnce=false; // the anchor filter applies only when opened from a command or element
+async function loadNotes(sid){
+  const r=await noteApi.list(sid);
+  if(r.ok)for(const n of r.notes)if(n.session_id===sid)noteDrafts.sync(n);
+  return r;
+}
+const noteHasText=d=>!!(d.id||d.title.trim()||d.body.trim());
+function sessionNotes(sid){return [...noteDrafts.all.values()].filter(d=>d.session===sid&&(noteHasText(d)||notesSelected.get(sid)===d.key));}
+function anchorNotes(sid,anchor){const k=pentrailNotes.anchorKey(anchor);return sessionNotes(sid).filter(d=>!d.archived&&noteHasText(d)&&pentrailNotes.anchorKey(d.anchor)===k);}
+// The block shown with a timeline command or a graph element.
+function noteLinksHTML(sid,anchor,head=true){
+  const list=anchorNotes(sid,anchor);
+  const items=list.slice(0,20).map(d=>`<button type="button" class="nlt" data-note-key="${esc(d.key)}">✎ ${esc(d.title.trim()||'(untitled)')}${d.state!=='saved'?' · '+esc(d.state):''}</button>`).join('');
+  return `<div class="notelinks">${head?`<div>Operator notes (${list.length}) — your annotations, not captured evidence</div>`:''}${items}<div class="xact"><button type="button" data-note-add="1">Add note</button><button type="button" data-note-list="1">Notes</button></div></div>`;
+}
+// A click in such a block: add a note, list the anchor's notes, or open one.
+function noteLinkClick(b,sid,anchor,label){
+  if(!b||sid!==activeSession)return false;
+  if(b.dataset.noteAdd!=null){openNotes({session:sid,anchor,label,create:true});return true;}
+  if(b.dataset.noteList!=null){openNotes({session:sid,anchor,label});return true;}
+  if(b.dataset.noteKey!=null){openNotes({session:sid,anchor,label,key:b.dataset.noteKey});return true;}
+  return false;
+}
+function openNotes(o){
+  notesView={...notesView,session:o.session,anchor:o.anchor||null,anchorLabel:o.label||''};
+  notesAnchorOnce=!!(o.anchor&&o.anchor.kind);
+  if(o.create){
+    const k=pentrailNotes.anchorKey(o.anchor);
+    let d=[...noteDrafts.all.values()].find(x=>x.session===o.session&&!x.id&&x.state==='empty'&&!x.title&&!x.body&&pentrailNotes.anchorKey(x.anchor)===k);
+    if(!d)d=noteDrafts.create(o.session,o.anchor,o.label);
+    notesSelected.set(o.session,d.key);
+  }else if(o.key)notesSelected.set(o.session,o.key);
+  switchView('notes');
+}
+async function renderNotes(){
+  const pane=document.getElementById('notespane');
+  const req=++notesRequest,sid=activeSession;
+  const live=()=>req===notesRequest&&sid===activeSession&&activeView==='notes';
+  notesEditorKey=null;
+  if(notesView.session!==sid||!notesAnchorOnce)notesView={...notesView,session:sid,anchor:null,anchorLabel:''};
+  notesAnchorOnce=false;
+  pane.innerHTML='<div class="hint">loading…</div>';
+  const r=await loadNotes(sid);
+  if(!live())return;
+  pane.innerHTML='';
+  const head=document.createElement('div');head.className='nhead';
+  head.innerHTML='<b>Operator notes</b> — your own annotations for session '+esc(String(sid))+', kept in the encrypted database. They are <b>not captured evidence</b>: writing, archiving or restoring a note never changes commands, terminal output, findings or the cleanup checklist. Private by default: reports and exports include them only with <code>--include-notes</code>.';
+  pane.appendChild(head);
+  if(!r.ok){const e=document.createElement('div');e.className='nhead';e.style.color='var(--bad)';e.textContent='Could not read the saved notes ('+r.error+'). Only drafts of this page are shown. ';
+    const b=document.createElement('button');b.type='button';b.textContent='Try again';b.onclick=()=>{if(live())renderNotes();};e.appendChild(b);pane.appendChild(e);}
+  const tools=document.createElement('div');tools.className='ntools';
+  const q=document.createElement('input');q.type='search';q.placeholder='Search notes (title, text, anchor)';q.setAttribute('aria-label','Search notes');q.value=notesView.query;
+  const arch=document.createElement('label');const ac=document.createElement('input');ac.type='checkbox';ac.checked=notesView.archived;arch.append(ac,'show archived');
+  const add=document.createElement('button');add.type='button';
+  const filter=document.createElement('span');filter.className='nfilter';
+  tools.append(q,arch,add,filter);pane.appendChild(tools);
+  const wrap=document.createElement('div');wrap.className='nwrap';
+  const listEl=document.createElement('div');listEl.className='nlist';listEl.setAttribute('role','list');
+  const editor=document.createElement('div');editor.className='neditor';
+  wrap.append(listEl,editor);pane.appendChild(wrap);
+  const drawTools=()=>{
+    const a=notesView.anchor;
+    add.textContent=a&&a.kind?'New note for this '+(a.kind==='command'?'command':'element'):'New session note';
+    filter.textContent='';
+    if(a&&a.kind){filter.append('Showing notes for: '+(notesView.anchorLabel||pentrailNotes.anchorKey(a))+' ');
+      const all=document.createElement('button');all.type='button';all.textContent='Show all notes of the session';
+      all.onclick=()=>{if(!live())return;notesView={...notesView,anchor:null,anchorLabel:''};drawTools();drawList();};filter.appendChild(all);}
+  };
+  const drawList=()=>{
+    if(!live())return;
+    const a=notesView.anchor,ak=a&&a.kind?pentrailNotes.anchorKey(a):null,sel=notesSelected.get(sid);
+    const list=sessionNotes(sid).filter(d=>(!ak||pentrailNotes.anchorKey(d.anchor)===ak)&&(notesView.archived||!d.archived||d.key===sel)&&(pentrailNotes.matches(d,notesView.query)||d.key===sel))
+      .sort((x,y)=>(y.id?0:1)-(x.id?0:1)||(y.updatedMs||0)-(x.updatedMs||0));
+    listEl.innerHTML='';
+    if(!list.length){const h=document.createElement('div');h.className='hint';h.textContent=notesView.query?'No note matches the search.':'No notes here yet.';listEl.appendChild(h);}
+    for(const d of list){
+      const b=document.createElement('button');b.type='button';b.className='nrow'+(d.key===sel?' sel':'');b.dataset.key=d.key;b.setAttribute('role','listitem');
+      const t=document.createElement('div');t.className='nt';t.textContent=d.title.trim()||'(untitled)';
+      if(d.state!=='saved'&&d.state!=='empty'){const s=document.createElement('span');s.className='nst '+d.state;s.textContent=d.state;t.appendChild(s);}
+      if(d.archived){const s=document.createElement('span');s.className='nst arch';s.textContent='archived';t.appendChild(s);}
+      const m=document.createElement('div');m.className='nm';m.textContent=(d.anchorLabel||'session')+(d.updatedMs?' · '+new Date(d.updatedMs).toLocaleString('en-GB',{hour12:false}):' · not saved yet');
+      b.append(t,m);
+      b.onclick=()=>{if(!live())return;notesSelected.set(sid,d.key);drawList();drawEditor();};
+      listEl.appendChild(b);
+    }
+  };
+  const drawEditor=()=>{
+    if(!live())return;
+    const d=noteDrafts.get(notesSelected.get(sid));
+    editor.innerHTML='';notesEditorKey=null;
+    if(!d||d.session!==sid){const h=document.createElement('div');h.className='hint';h.textContent='Select a note, or add one. Notes can also be added from a command in the timeline or an element in the graph.';editor.appendChild(h);return;}
+    notesEditorKey=d.key;
+    editor.innerHTML=`<div class="nbadge">Operator note — not captured evidence</div>
+      <div class="nanchor"></div>
+      <label for="note-title">Title</label><input id="note-title" type="text" autocomplete="off" spellcheck="true">
+      <label for="note-body">Text (plain text)</label><textarea id="note-body" spellcheck="true"></textarea>
+      <div class="nmask">Saved automatically after a short pause. Before a note is stored, recognized passwords, tokens and keys are masked with the same rules as the session record (each masked byte becomes <code>*</code>); only the masked text is stored and the original is not kept. Text is shown exactly as typed — Markdown and HTML are never rendered. Unsaved text exists only in this page's memory.</div>
+      <div class="nstatus" role="status" aria-live="polite"></div>
+      <div class="nconflict"></div>
+      <div class="xact"><button type="button" data-act="save">Save now</button><button type="button" data-act="retry">Retry</button><button type="button" data-act="reload">Load the saved version (discard my text)</button><button type="button" data-act="overwrite">Save my text over it</button><button type="button" data-act="archive">Archive</button><button type="button" data-act="restore">Restore</button></div>
+      <div class="xmeta nmeta"></div>`;
+    const an=editor.querySelector('.nanchor');
+    const at=document.createElement('span');at.className='nanchor-text';an.append(at,' ');
+    if(d.anchor.kind==='command'){const b=document.createElement('button');b.type='button';b.textContent='Open in the timeline';b.onclick=()=>{if(live())showCommand(d.anchor.cmd_index);};an.appendChild(b);}
+    if(d.anchor.kind==='node'){const b=document.createElement('button');b.type='button';b.textContent='Show in the graph';b.onclick=()=>{if(live()){const ids=[d.anchor.node_id];ids.fromNote=true;showInGraph(ids);}};an.appendChild(b);}
+    const ti=editor.querySelector('#note-title'),bo=editor.querySelector('#note-body');
+    ti.value=d.title;bo.value=d.body;
+    ti.oninput=()=>noteDrafts.edit(d.key,{title:ti.value});
+    bo.oninput=()=>noteDrafts.edit(d.key,{body:bo.value});
+    editor.querySelector('.xact').onclick=ev=>{const b=ev.target.closest&&ev.target.closest('button');if(!b)return;
+      const act=b.dataset.act;
+      if(act==='save')noteDrafts.flush(d.key);
+      else if(act==='retry')noteDrafts.retry(d.key);
+      else if(act==='reload'||act==='overwrite')noteDrafts.resolve(d.key,act);
+      else if(act==='archive'||act==='restore')noteDrafts.setArchived(d.key,act==='archive');};
+    paintNoteEditor(d);
+    if(!d.id&&!d.title&&!d.body)ti.focus();
+  };
+  renderNotes.redraw=key=>{ if(!live())return; drawList(); if(key===notesEditorKey)paintNoteEditor(noteDrafts.get(key)); };
+  q.oninput=()=>{if(!live())return;notesView={...notesView,query:q.value};drawList();};
+  ac.onchange=()=>{if(!live())return;notesView={...notesView,archived:ac.checked};drawList();};
+  add.onclick=()=>{if(!live())return;const a=notesView.anchor;const d=noteDrafts.create(sid,a&&a.kind?a:{kind:''},a&&a.kind?notesView.anchorLabel:'session');notesSelected.set(sid,d.key);drawList();drawEditor();};
+  drawTools();drawList();drawEditor();
+}
+// Repaint the editor of a draft from its state (only the shown one).
+function paintNoteEditor(d){
+  const pane=document.getElementById('notespane');
+  if(!d||d.key!==notesEditorKey)return;
+  const ti=pane.querySelector('#note-title'),bo=pane.querySelector('#note-body');
+  if(!ti||!bo)return;
+  const sync=(el,v)=>{if(el.value!==v){const a=el.selectionStart,b=el.selectionEnd;el.value=v;try{el.setSelectionRange(Math.min(a,v.length),Math.min(b,v.length));}catch(e){/* not focused */}}};
+  sync(ti,d.title);sync(bo,d.body);
+  ti.readOnly=bo.readOnly=d.archived||!!d.op; // read-only while archived, and while an archive/restore runs
+  const at=pane.querySelector('.nanchor-text');
+  if(at)at.textContent='Attached to: '+(d.anchorLabel||'the session')+(d.anchor.kind?(d.id?' (snapshot taken when the note was created; kept if the '+(d.anchor.kind==='command'?'command':'element')+' disappears)':' (not saved yet)'):'');
+  const st=pane.querySelector('.nstatus');st.className='nstatus '+d.state;
+  st.textContent=pentrailNotes.statusText(d);
+  const cf=pane.querySelector('.nconflict');cf.textContent='';
+  if(d.state==='conflict'&&d.current){
+    const h=document.createElement('div');h.textContent='Saved version (revision '+d.current.revision+(d.current.archived?', archived':'')+'):';
+    const p=document.createElement('pre');p.textContent=(d.current.title||'(untitled)')+'\n\n'+(d.current.body||'');
+    cf.append(h,p);
+  }
+  const show=(act,on)=>{const b=pane.querySelector(`.neditor button[data-act="${act}"]`);if(b)b.hidden=!on;};
+  const busy=d.state==='saving'||!!d.op;
+  show('save',!d.archived&&!busy&&(d.state==='unsaved'));
+  show('retry',d.state==='error'&&!busy);
+  show('reload',d.state==='conflict'&&!!d.current);show('overwrite',d.state==='conflict'&&!!d.current&&!d.current.archived);
+  show('archive',!!d.id&&!d.archived&&!busy&&d.state!=='conflict');
+  show('restore',!!d.id&&d.archived&&!busy);
+  const meta=pane.querySelector('.nmeta');
+  const f=ms=>ms?new Date(ms).toLocaleString('en-GB',{hour12:false}):'—';
+  meta.textContent=d.id?'created '+f(d.createdMs)+' · last saved '+f(d.updatedMs)+' · revision '+d.revision:'not saved yet';
+}
+function noteChanged(d){
+  if(activeView!=='notes'||!d||d.session!==activeSession||typeof renderNotes.redraw!=='function')return;
+  renderNotes.redraw(d.key);
+}
+
+const CLEAN_LABEL={file:'Files',config:'Configuration',account:'Accounts',service:'Services/tasks'};
+// Ticks are per browser AND per database (cleanup.js, Codex 04J); the
+// database's namespace is read once per page load, retried on failure.
+// Concurrent renders share one identity request; a failed (or late) answer
+// never replaces a namespace that is already known.
+let cleanNS=null,cleanNSPending=null;
+function cleanNamespace(){
+  if(cleanNS&&cleanNS.ok)return Promise.resolve(cleanNS);
+  if(!cleanNSPending)cleanNSPending=pentrailCleanup.namespace(fetch).then(r=>{
+    cleanNSPending=null;
+    if(!(cleanNS&&cleanNS.ok))cleanNS=r;
+    return r.ok?r:(cleanNS&&cleanNS.ok?cleanNS:r);
+  });
+  return cleanNSPending;
+}
+function cleanStorage(){ try{return window.localStorage;}catch(e){return null;} }
+
+// Every render takes a number. After each await, and in every handler of the
+// rows it drew, a render acts only while it is still the newest one, for the
+// same session, with the Cleanup view shown — otherwise it is retired and
+// does nothing (it neither redraws the checklist nor writes a tick).
+let cleanRequest=0;
+async function renderCleanup(){
+  const main=document.getElementById('cleanpane');
+  const req=++cleanRequest,sid=activeSession;
+  const live=()=>req===cleanRequest&&sid===activeSession&&activeView==='cleanup';
+  main.innerHTML='<div class="hint">loading…</div>';
+  const fail=r=>{ if(!live())return; main.innerHTML=''; const h=document.createElement('div');h.className='clhead';h.setAttribute('role','alert');
+    h.textContent='Could not read the checklist. '+readMessage(r)+' This does not mean there were no changes. ';
+    const b=document.createElement('button');b.type='button';b.textContent='Try again';b.onclick=()=>{if(live())renderCleanup();};h.appendChild(b);main.appendChild(h); };
+  // Bounded reads (04BM): the checklist and the database identity both settle.
+  const [ir,nsr]=await Promise.all([readJSON('/api/changes?session='+sid,isList),cleanNamespace()]);
+  if(!live())return;
+  if(!ir.ok){ fail(ir); return; }
+  const items=ir.data;
+  const st=pentrailCleanup.state(cleanStorage(),nsr,sid);
+  main.innerHTML='';
+  const head=document.createElement('div');head.className='clhead';head.dataset.state=st.known?'known':'unknown';
+  if(!items.length){ head.textContent='No target state changes were detected in this session. The checklist is empty.'; main.appendChild(head); return; }
+  const showHead=()=>{head.textContent=pentrailCleanup.headText(items.length,items.filter(st.done).length,st,nsr);
+    if(!st.known){const b=document.createElement('button');b.type='button';b.textContent='Try again';b.onclick=()=>{if(live())renderCleanup();};head.appendChild(document.createTextNode(' '));head.appendChild(b);}};
+  showHead();
+  main.appendChild(head);
+  for(const it of items){
+    const done=st.done(it);
+    const row=document.createElement('div');row.className='clitem'+(done?' done':'');
+    row.innerHTML=`
+      <input type="checkbox" ${done?'checked':''} ${st.known?'':'disabled title="tick state unknown"'}>
+      <div class="clbody">
+        <div style="display:flex;gap:10px;align-items:center">
+          <span class="clcat ${esc(it.category)}">${esc(CLEAN_LABEL[it.category]||it.category)}</span>
+          <span class="cldesc">${esc(it.description)}</span>
+        </div>
+        <div class="clcmd">${esc(it.command)}</div>
+        <div class="clmeta">command #${it.cmd_index} · ${fmtTime(it.detected_ms)} · ${esc(it.cwd)} · offset ${it.offset}</div>
+      </div>`;
+    const cb=row.querySelector('input');
+    cb.onchange=()=>{
+      if(!live()){cb.checked=!cb.checked;return;} // a retired render: no tick is written
+      if(!st.set(it,cb.checked)){cb.checked=!cb.checked;head.textContent='Could not save the tick in this browser (browser storage unavailable).';return;}
+      row.classList.toggle('done',cb.checked);showHead();
+    };
+    main.appendChild(row);
+  }
+}
+
+// ---- tabs ----
+// Cross-navigation: a command to open in the timeline, or graph elements to
+// select (candidate node ids, the first existing one wins).
+let pendingCmd=null,pendingNodes=null;
+function showCommand(index){pendingCmd=index;switchView('timeline');}
+function showInGraph(ids){pendingNodes=ids;switchView('graph');}
+function switchView(view){document.querySelector(`.tab[data-view="${view}"]`).onclick();}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  activeView=t.dataset.view;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===t));
+  document.getElementById('timeline').style.display = activeView==='timeline'?'block':'none';
+  document.getElementById('graphpane').classList.toggle('show',activeView==='graph');
+  document.getElementById('cleanpane').style.display = activeView==='cleanup'?'block':'none';
+  document.getElementById('notespane').style.display = activeView==='notes'?'block':'none';
+  if(activeView!=='graph')leaveGraph();
+  renderActive();
+});
+
+// ---- tool output files (artifacts): artifacts.js ----
+
+// ---- timeline ----
+let timelineRequest=0; // only the newest renderTimeline call may fill the timeline
+async function renderTimeline(){
+  const main=document.getElementById('timeline');
+  const req=++timelineRequest,sid=activeSession;
+  const live=()=>req===timelineRequest&&sid===activeSession&&activeView==='timeline';
+  main.innerHTML='<div class="hint">loading…</div>';
+  // Evidence (commands, entities, capture events) is mandatory; every read is
+  // bounded and settles. Artifacts and notes are optional, bounded, and report
+  // their own failure: they never hold back or fail the evidence.
+  const [cr,er,pr,arts,notesRead]=await Promise.all([
+    readJSON('/api/commands?session='+sid,isList),
+    readJSON('/api/entities?session='+sid,isList),
+    readJSON('/api/capture-events?session='+sid,isList),
+    pentrailArtifacts.load(fetch,activeSession), // still sid: evaluated before the await
+    bounded(loadNotes(sid),10000,{ok:false,error:'the request timed out'}), // operator notes
+  ]);
+  // Another session or view was chosen meanwhile: its own render owns the page.
+  if(!live())return;
+  const failed=[cr,er,pr].find(r=>!r.ok);
+  if(failed){main.innerHTML='';showReadError(main,'Could not load the timeline of session '+sid,failed,()=>{if(live())renderTimeline();});return;}
+  const cs=cr.data,ents=er.data,captureEvents=pr.data;
+  const byCmd={},summary={};
+  for(const e of ents){
+    (byCmd[e.cmd_index]=byCmd[e.cmd_index]||[]).push(e);
+    const m=(summary[e.type]=summary[e.type]||new Map());
+    const prev=m.get(e.value),det=parseDet(e.details);
+    if(!prev)m.set(e.value,{count:1,conf:e.confidence,det});
+    else{prev.count++;if(e.confidence==='high'){prev.conf='high';Object.assign(prev.det,det);}}
+  }
+  main.innerHTML='';
+  const privacy=sessionInfo.get(activeSession);const protection=document.createElement('div');protection.className='summary';const pv=privacy?.privacy_version;protection.textContent=pv==='masked-v3'?'Protected record (masked-v3): recognized passwords and secrets, including in marker metadata, are masked in the stored record. Masked '+(privacy.redacted_bytes||0)+' B.':pv==='masked-v2'?'Protected record (masked-v2). Marker arguments (e.g. the working directory) were stored before the newer rule — the viewer hides recognized secrets in them; the stored record is not rewritten.':'Older record: the viewer hides recognized secrets; the originals remain in the encrypted database.';main.appendChild(protection);
+  if(privacy?.pending_bytes>0||privacy?.recoveries>0){const recovery=document.createElement("div");recovery.className="summary";recovery.textContent=privacy.recoveries>0?"Session recovered after the process was interrupted. The last command may be incomplete.":"Unfinished line: "+privacy.pending_bytes+" B in the encrypted recovery buffer. It appears once the line ends, is committed or the session is recovered.";main.appendChild(recovery);}
+  {const sid=activeSession,el=pentrailArtifacts.render(document,arts,()=>pentrailArtifacts.load(fetch,sid));if(el)main.appendChild(el);}
+  if(!notesRead||!notesRead.ok){const nb=document.createElement('div');nb.className='summary';nb.setAttribute('role','status');
+    nb.textContent='Operator notes: could not be read ('+((notesRead&&notesRead.error)||'unknown error')+'). This does not mean there are none. ';
+    const b=document.createElement('button');b.type='button';b.textContent='Try again';b.onclick=()=>{if(live())renderTimeline();};nb.appendChild(b);main.appendChild(nb);}
+  const shell=(sessionInfo.get(activeSession)?.shell||'').toLowerCase();
+  if(/(?:^|[\\/])bash(?:\.exe)?$/.test(shell)){
+    const note=document.createElement('div');note.className='summary';note.textContent='Bash: with history disabled or non-standard shell settings the list may contain only parts of commands. The terminal output is in the “Full session record” below.';main.appendChild(note);
+  }
+  if(['powershell.exe','pwsh.exe','cmd.exe'].includes(shell)){
+    const note=document.createElement('div');note.className='summary';const ua=sessionInfo.get(activeSession)?.unattributed_input||0;note.textContent='Windows: the full session record contains the terminal output. The split into commands is auxiliary; Windows may reorder markers and screen refreshes. The output range of a single command is not proof of its completeness.'+(shell==='cmd.exe'?' CMD: lines typed or pasted while a program runs are recorded as commands only when cmd confirms them with an echo at the prompt.'+(ua?' '+ua+' such lines were not confirmed (they may have been program input) — they are only in the full session record, if they were displayed.':''):'');main.appendChild(note);
+  }
+  const sessionID=activeSession;
+  const raw=document.createElement('details');raw.className='summary';
+  raw.innerHTML='<summary>Full session record</summary><button type="button">Load record</button><div class="gapwarn"></div><pre style="white-space:pre-wrap;max-height:60vh;overflow:auto"></pre>';
+  main.appendChild(raw);let rawOffset=0,rawMissing=0; // rawMissing: bytes known to be missing in the parts appended so far
+  raw.querySelector('button').onclick=async()=>{
+    const btn=raw.querySelector('button');btn.disabled=true;
+    // Bounded read (04BM). The offsets must be consistent before anything is
+    // appended; on any failure nothing is appended and the same part can be
+    // requested again.
+    const from=rawOffset,warning=raw.querySelector('.gapwarn');
+    const res=await readResponse('/api/raw?session='+sessionID+'&start='+from+'&limit=1048576',r=>r.text(),v=>typeof v==='string');
+    let next=NaN,total=NaN,missing=NaN;
+    // A header must be present and a plain decimal number: Number(null) and
+    // Number('') are 0, which would make a reply without headers look complete.
+    const num=v=>typeof v==='string'&&/^[0-9]{1,15}$/.test(v)?Number(v):NaN;
+    if(res.ok){const h=res.headers;next=num(h.get('X-Next-Offset'));total=num(h.get('X-Raw-Total'));missing=num(h.get('X-Missing-Bytes'));}
+    const sane=res.ok&&Number.isSafeInteger(next)&&Number.isSafeInteger(total)&&Number.isSafeInteger(missing)&&missing>=0&&next>=from&&next<=total&&(next>from||next===total);
+    // A known gap belongs to the parts already appended and stays visible; a
+    // failed request adds nothing to it (the same part is asked for again).
+    const gap=()=>rawMissing?'Incomplete record — '+rawMissing+' B missing in the parts loaded so far.':'';
+    if(!sane){warning.textContent=(gap()?gap()+' ':'')+'Could not load this part of the record. '+readMessage(res.ok?{kind:'invalid'}:res)+' Nothing was added; the button loads the same part again.';warning.style.display='block';btn.disabled=false;return;}
+    rawMissing+=missing;
+    warning.textContent=gap();warning.style.display=rawMissing?'block':'';
+    raw.querySelector('pre').textContent+=strip(res.data);rawOffset=next;btn.textContent=rawOffset<total?'Load the next part':'Current record loaded';btn.disabled=rawOffset>=total;
+  };
+  if(captureEvents.some(e=>!e.recording)){
+    const note=document.createElement('div');note.className='summary';
+    note.textContent='Recording was turned off. Data from paused periods is not part of the record. '+captureEvents.map(e=>(e.recording?'On':'Off')+' '+fmtTime(e.at_ms)).join(' · ');
+    main.appendChild(note);
+  }
+  if(TYPE_ORDER.some(t=>summary[t]&&summary[t].size)){
+    const sum=document.createElement('div');sum.className='summary';let groups='';
+    for(const t of TYPE_ORDER){
+      const m=summary[t];if(!m||!m.size)continue;
+      const anyHi=[...m.values()].some(x=>x.conf==='high');
+      const items=[...m.entries()].map(([v,info])=>{
+        const suf=detailSuffix(t,info.det),sev=t==='finding'?sevClass(info.det):'';
+        return `<span class="conf-${info.conf}"><span class="${sev}">${esc(v)}</span><span class="det">${esc(suf)}${info.count>1?` ·${info.count}`:''}</span></span>`;
+      }).join('');
+      groups+=`<div class="group${anyHi?' hi':''}"><div class="ghead"><span>${TYPE_LABEL[t]}</span><span class="gcount">${m.size}</span></div><div class="glist">${items}</div></div>`;
+    }
+    sum.innerHTML=`<h2>detected indicators <span class="conf">green = high confidence (parser) · the rest = regex</span></h2><div class="groups">${groups}</div>`;
+    main.appendChild(sum);
+    sum.querySelectorAll('.group .ghead').forEach(h=>h.onclick=()=>h.parentElement.classList.toggle('open'));
+  }
+  if(!cs.length){const d=document.createElement('div');d.className='hint';d.textContent='No split into commands (e.g. inside ssh or a subshell). The available output is in the full session record.';main.appendChild(d);return;}
+  for(const c of cs){
+    const wrap=document.createElement('div');wrap.className='cmd';wrap.dataset.index=c.index;
+    const outBytes=c.out_end_off-c.out_start_off;
+    const endNote={session_end:'end not observed: the session (shell) ended while it ran; output range up to the end of the record, exit code unknown',recording_paused:'end not observed: recording was paused (pentrail off) while it ran; output range up to the pause, exit code unknown',capture_interrupted:'end not observed: the capture process was interrupted; range restored on reopening, exit code unknown'}[c.end_reason]||(c.end_reason?'end not observed ('+c.end_reason+'), exit code unknown':'');
+    const badge=c.end_reason?'<span class="badge wait">?</span>':(!c.complete?'<span class="badge wait">…</span>':(c.exit_code===0?'<span class="badge ok">0</span>':`<span class="badge bad">${c.exit_code}</span>`));
+    const ce=(byCmd[c.index]||[]);
+    wrap.innerHTML=`
+      <div class="row">${badge}
+        <span class="time">${fmtTime(c.started_ms)}</span>
+        <span class="cmdtext">${esc(c.command)||'<span style=color:#8b949e>(no command text)</span>'}</span>
+        ${ce.length?`<span class="nfound" title="elements found in the output">${ce.length} found</span>`:''}
+        <span class="dur">${fmtDur(c.started_ms,c.ended_ms)}</span>
+        <span class="cwd" title="${esc(c.cwd)}">${esc(c.cwd)}</span></div>
+      <div class="out">
+        <details class="sec user" open><summary>Command — typed by the user</summary>
+          <pre>${esc(c.command)||'<span class="none">(no command text recorded)</span>'}</pre>
+          <div class="xmeta">command #${c.index}${c.cwd?' · in '+esc(c.cwd):''} · started ${fmtTime(c.started_ms)}${c.ended_ms?' · ended '+fmtTime(c.ended_ms):''}</div></details>
+        <details class="sec term" open><summary>Terminal output — printed by the programs · ${fmtBytes(outBytes>0?outBytes:0)}</summary>
+          <div class="prov"><span>offset ${c.out_start_off}..${c.out_end_off}</span><span>${fmtBytes(outBytes>0?outBytes:0)} of the raw log</span><button class="raw">raw / clean</button></div>
+          <div class="gapwarn"></div><pre class="body"></pre></details>
+        <details class="sec found" open><summary>Found in this output (${ce.length}) — select one to show it in the graph</summary><div class="chips"></div></details>
+        <details class="sec notes"${anchorNotes(sid,{kind:'command',cmd_index:c.index}).length?' open':''}><summary>Operator notes (${notesRead.ok?anchorNotes(sid,{kind:'command',cmd_index:c.index}).length:'could not be read'}) — your annotations, not captured evidence</summary><div class="notelist">${noteLinksHTML(sid,{kind:'command',cmd_index:c.index},false)}</div></details></div>`;
+    wrap.querySelector('details.notes').onclick=ev=>{const b=ev.target.closest&&ev.target.closest('button');if(b&&noteLinkClick(b,sid,{kind:'command',cmd_index:c.index},'command #'+c.index+': '+(c.command||'')))ev.preventDefault();};
+    const chipsEl=wrap.querySelector('.chips');
+    if(ce.length){chipsEl.innerHTML=ce.map((e,i)=>{const det=parseDet(e.details),suf=detailSuffix(e.type,det),hi=e.confidence==='high'?' hi':'';return `<button type="button" class="chip ${e.type}${hi}" data-i="${i}" title="Show in the graph"><span class="k">${TYPE_LABEL[e.type]||e.type}</span>${esc(e.value)}<span class="det">${esc(suf)}</span></button>`;}).join('');
+      chipsEl.onclick=ev=>{const b=ev.target.closest&&ev.target.closest('button.chip');if(b)showInGraph(pentrailXref.nodeIds(ce[Number(b.dataset.i)]).ids);};}
+    else wrap.querySelector('details.found').remove();
+    if(endNote){wrap.querySelector('.badge').title=endNote;const en=document.createElement('div');en.className='gapwarn';en.textContent='⚠ '+endNote;wrap.querySelector('.out').insertBefore(en,wrap.querySelector('details.user'));}
+    const row=wrap.querySelector('.row'),pre=wrap.querySelector('.body'),btn=wrap.querySelector('.raw');
+    let rawText=null,showRaw=false;
+    row.onclick=async(e)=>{
+      if(e&&e.target===btn)return;
+      const open=wrap.classList.toggle('open');
+      if(open&&rawText===null){
+        if(outBytes<=0){pre.innerHTML='<span class="none">(no output)</span>';rawText='';return;}
+        const out=await readResponse(`/api/output?session=${sid}&start=${c.out_start_off}&end=${c.out_end_off}`,r=>r.text(),v=>typeof v==='string');
+        if(!out.ok){wrap.querySelector('.gapwarn').textContent='⚠ Could not load this output. '+readMessage(out)+' Close and open the command to try again.';return;}
+        if(rawText!==null)return; // a second click loaded it meanwhile
+        const miss=parseInt(out.headers.get('X-Missing-Bytes')||'0',10);
+        rawText=out.data;wrap.querySelector('.gapwarn').textContent='';
+        if(miss>0){ wrap.querySelector('.gapwarn').textContent='⚠ Incomplete output: '+miss+' B missing in the raw log — the text below is NOT complete'; }
+        pre.textContent=strip(rawText);
+      }
+    };
+    btn.onclick=()=>{showRaw=!showRaw;pre.textContent=showRaw?rawText:strip(rawText);};
+    main.appendChild(wrap);
+  }
+  // Opened from the graph: expand that command and bring it into view.
+  if(pendingCmd!=null){const want=pendingCmd;pendingCmd=null;
+    const w=main.querySelector(`.cmd[data-index="${want}"]`);
+    if(w){if(!w.classList.contains('open'))w.querySelector('.row').onclick();w.scrollIntoView({block:'start'});w.classList.add('flash');setTimeout(()=>w.classList.remove('flash'),1700);}
+  }
+}
+
+// ---- graph ----
+function renderLegend(){
+  const el=document.getElementById('legend');
+  el.innerHTML=TYPE_ORDER.map(t=>`<div class="lg"><span class="dot" style="background:${NODE_COLORS[t]}"></span>${TYPE_LABEL[t]}</div>`).join('')+
+    '<span class="sep"></span><div class="lg"><span class="dot low"></span>low confidence</div><div class="lg">→ relationship (hover to see its type)</div>';
+}
+let graphRequest=0; // Codex 04BC: only the newest renderGraph call may draw
+// The minimum the graph needs before anything is drawn (04BO): every node an
+// object with a unique, non-empty string id; optional fields of the right type
+// (null allowed); every edge an object with string endpoints. An edge whose
+// endpoint is not a node is left out by the renderer, as before. Anything else
+// is reported as invalid data with Try again, never drawn or shown as empty.
+function graphDataOK(v){
+  if(v===null||typeof v!=='object'||Array.isArray(v)||!Array.isArray(v.nodes)||!(v.edges==null||Array.isArray(v.edges)))return false;
+  const obj=x=>x!==null&&typeof x==='object'&&!Array.isArray(x),opt=(x,t)=>x==null||typeof x===t;
+  const ids=new Set();
+  for(const n of v.nodes){
+    if(!obj(n)||typeof n.id!=='string'||n.id===''||ids.has(n.id))return false;
+    ids.add(n.id);
+    if(!opt(n.type,'string')||!opt(n.confidence,'string')||!opt(n.tool,'string')||!opt(n.cmd_index,'number')||!opt(n.offset,'number')||!(n.details==null||obj(n.details)))return false;
+    if(!(n.label==null||typeof n.label==='string'||typeof n.label==='number'))return false;
+  }
+  for(const e of v.edges||[]){
+    if(!obj(e)||typeof e.source!=='string'||typeof e.target!=='string'||!opt(e.type,'string'))return false;
+  }
+  return true;
+}
+async function renderGraph(){
+  renderLegend();
+  const req=++graphRequest, session=activeSession;
+  const canvas=document.getElementById('gcanvas');
+  const detail=document.getElementById('gdetail');
+  const status=document.getElementById('route-status'), reset=document.getElementById('route-reset');
+  // Never leave the previous session's graph or route state on screen while loading.
+  detail.classList.remove('show');detail.innerHTML='';
+  if(graph){graph.destroy();graph=null;}
+  status.textContent='';reset.hidden=true;
+  // The canvas label must describe what is on screen now, not the previous graph.
+  const label=t=>canvas.setAttribute('aria-label','Relationship graph: '+t);
+  label('loading…');
+  // Bounded read (04BM): request and body within READ_TIMEOUT_MS, 2xx, and a
+  // graph object (nodes: list; edges: list or null for none).
+  const gr=await readJSON('/api/graph?session='+encodeURIComponent(session),graphDataOK);
+  if(req!==graphRequest)return; // a newer session or render started meanwhile
+  const fail=r=>{
+    if(graph){try{graph.destroy();}catch(e){/* already broken */}graph=null;}
+    label('could not be loaded');
+    detail.innerHTML='<h3>Could not load the graph</h3><div class="ty">'+esc(readMessage(r))+'</div><div class="xact"><button type="button" data-gretry="1">Try again</button></div>';
+    detail.onclick=ev=>{const b=ev.target&&ev.target.closest&&ev.target.closest('button');if(b&&b.dataset.gretry!=null&&req===graphRequest&&session===activeSession&&activeView==='graph')renderGraph();};
+    detail.classList.add('show');
+  };
+  if(!gr.ok){fail(gr);return;}
+  const data=gr.data;
+  const nodes=Array.isArray(data&&data.nodes)?data.nodes:[],edges=Array.isArray(data&&data.edges)?data.edges:[];
+  if(!nodes.length){label('no entities in this session');detail.classList.add('show');detail.innerHTML='<h3>No entities</h3><div class="ty">run a scan (nmap/ffuf/nuclei) or wait for extraction</div>';return;}
+  const byId=new Map(nodes.map(n=>[n.id,n]));
+  // Operator notes of the session (annotations, not evidence): read once per
+  // graph; the selected element's block is refreshed when they arrive.
+  const notesOf=node=>`<div class="gnotes">${noteLinksHTML(session,{kind:'node',node_id:node.id})}</div>`;
+  loadNotes(session).then(()=>{if(req!==graphRequest||!shownNode)return;const el=detail.querySelector('.gnotes');if(el)el.innerHTML=noteLinksHTML(session,{kind:'node',node_id:shownNode.id});});
+  const nameOf=id=>{const n=byId.get(id);return n&&n.label!=null?String(n.label):String(id);};
+  // The commands an element was found in, with what the user typed and what
+  // the terminal printed. Loaded once per graph, on the first selection.
+  // Every selection (and deselection) takes a new number; a continuation after
+  // an await paints only if it is still the newest selection of the newest
+  // graph, so a slow reply never replaces what is shown now.
+  let xref=null,seq=0,shownNode=null,shownWant=null; // shownWant: the command asked for, kept for Try again
+  const outputs=new Map(),settled=new Map(); // command index -> pending preview / finished preview
+  const current=my=>my===seq&&req===graphRequest;
+  // Bounded reads; a failure is not kept (xref=null), so Try again or the next selection asks again.
+  const loadXref=()=>xref||(xref=Promise.all([readJSON('/api/commands?session='+encodeURIComponent(session),isList),readJSON('/api/entities?session='+encodeURIComponent(session),isList)])
+    .then(([c,e])=>{const bad=!c.ok?c:!e.ok?e:null;if(bad)throw new Error(readMessage(bad));
+      return{byIndex:new Map(c.data.map(x=>[x.index,x])),index:pentrailXref.commandIndex(e.data,edges)};})
+    .catch(err=>{xref=null;throw err;}));
+  const helpers={esc:s=>esc(String(s)),time:fmtTime,dur:fmtDur,bytes:fmtBytes,clean:strip,openOutput:true};
+  function sourceHTML(node,state,cur,out){
+    if(state.loading)return '<div class="xsrc"><div class="ty">source command</div><div class="xmeta">loading the command…</div></div>';
+    if(state.error)return `<div class="xsrc"><div class="ty">source command</div><div class="gapwarn">Could not load the command. ${esc(state.error)}</div><div class="xact"><button type="button" data-xretry="1">Try again</button></div></div>`;
+    // "recorded": the element's own value came from that command's output;
+    // "related": an element found there names it (e.g. a port on this host).
+    const prov=pentrailXref.provenanceOf(node,state.data.index),list=prov.map(p=>p.cmd);
+    if(!list.length)return '<div class="xsrc"><div class="ty">source command</div><div class="xmeta">No command is recorded for this element.</div></div>';
+    const c=state.data.byIndex.get(cur),how=(prov.find(p=>p.cmd===cur)||{}).how;
+    const btn=p=>`<button type="button" data-cmd="${p.cmd}" aria-pressed="${p.cmd===cur}"${p.how==='related'?' class="relcmd" title="a related element found in this command names it"':''}>#${p.cmd}</button>`;
+    const group=(label,ps)=>ps.length?`${label} ${ps.slice(0,30).map(btn).join('')}${ps.length>30?' …':''}`:'';
+    const rec=prov.filter(p=>p.how!=='related'),rel=prov.filter(p=>p.how==='related');
+    const nav=list.length>1?`<div class="xnav">${group(`found in ${rec.length} command${rec.length===1?'':'s'}:`,rec)}${rec.length&&rel.length?' · ':''}${group('named by a related element in:',rel)}</div>`:'';
+    const note=how==='related'?`<div class="xmeta relnote">Command #${cur} did not record this element itself: an element found in its output names it.</div>`:'';
+    const body=note+(c?pentrailXref.commandHTML(c,helpers,out):`<div class="xmeta">command #${cur} is not in the command list (e.g. the split into commands is unavailable).</div>`);
+    return `<div class="xsrc"><div class="ty">source command${list.length>1?'s':''}</div>${nav}${body}${c?`<div class="xact"><button type="button" data-timeline="${cur}">Open in the timeline</button></div>`:''}</div>`;
+  }
+  // One preview request per command and graph, shared by all selections; a
+  // failure is not kept, so the next selection asks again.
+  function outputFor(c){
+    let p=outputs.get(c.index);
+    if(!p){p=pentrailXref.loadOutput(fetch,session,c,65536,READ_TIMEOUT_MS).then(r=>{
+        if(!r.ok){outputs.delete(c.index);return{state:'error',error:r.kind?readMessage(r):r.error};}
+        const done={state:'ok',...r};settled.set(c.index,done);return done;});
+      outputs.set(c.index,p);}
+    return p;
+  }
+  async function showSource(node,want){
+    const my=++seq;shownNode=node;shownWant=want;
+    const paint=(state,cur,out)=>{if(current(my))paintNode(node,sourceHTML(node,state,cur,out));};
+    paint({loading:true});
+    let data;try{data=await loadXref();}catch(err){paint({error:String(err&&err.message||err)});return;}
+    if(!current(my))return;
+    const list=pentrailXref.provenanceOf(node,data.index).map(p=>p.cmd);
+    const cur=want!=null&&list.includes(want)?want:list[0],c=data.byIndex.get(cur);
+    const has=c&&c.out_end_off>c.out_start_off;
+    paint({data},cur,has?(settled.get(cur)||{state:'loading'}):undefined);
+    if(!has||settled.has(cur))return;
+    const out=await outputFor(c);
+    paint({data},cur,out);
+  }
+  function deselect(){seq++;shownNode=null;shownWant=null;}
+  function paintNode(node,source){
+    const d=node.details||{};
+    const rows=Object.keys(d).map(k=>`<tr><td class="k">${esc(k)}</td><td>${esc(d[k])}</td></tr>`).join('');
+    const ci=node.cmd_index,off=node.offset; // null>=0 is true in JS: check the type
+    const cmd=Number.isSafeInteger(ci)&&ci>=0?`command #${ci}${Number.isSafeInteger(off)&&off>=0?`, offset ${off}`:''}`:'—';
+    detail.innerHTML=`<button class="close" type="button" aria-label="Close details">×</button><h3>${esc(node.label)}</h3>
+      <div class="ty">${TYPE_LABEL[node.type]||esc(node.type)} · ${node.confidence==='high'?'high confidence':'low confidence'}${node.tool?` · ${esc(node.tool)}`:''}</div>
+      ${rows?`<table>${rows}</table>`:''}
+      <div class="prov">source: ${esc(cmd)}</div>${source}${notesOf(node)}${relations(node.id)}`;
+  }
+  // Valid data that still cannot be drawn is reported like invalid data.
+  try{graph=initGraph(canvas,{nodes,edges},node=>{
+    if(!node){deselect();detail.classList.remove('show');return;}
+    // Start with the element's own provenance; the list may name more commands.
+    const own=Number.isSafeInteger(node.cmd_index)&&node.cmd_index>=0?node.cmd_index:null;
+    detail.classList.add('show');showSource(node,own);
+  },state=>{
+    status.textContent=state.root?`Paths through ${state.label}: ${state.visible} of ${state.total} elements · double-click or Escape restores everything`:'Time: top to bottom · drag an element or the background · wheel or pinch: zoom · double-click or Enter: relationship paths · arrow keys: select';
+    reset.hidden=!state.root;
+  });}catch(err){fail({ok:false,kind:'invalid'});return;}
+  reset.onclick=()=>graph&&graph.resetRoute();
+  document.getElementById('graph-fit').onclick=()=>graph&&graph.fit();
+  // One delegated handler: close the panel, or select a related element.
+  detail.onclick=ev=>{const b=ev.target&&ev.target.closest&&ev.target.closest('button');if(!b||!graph)return;
+    if(b.dataset.noteAdd!=null||b.dataset.noteList!=null||b.dataset.noteKey!=null){if(shownNode)noteLinkClick(b,session,{kind:'node',node_id:shownNode.id},'graph element: '+nameOf(shownNode.id));return;}
+    if(b.classList.contains('close')){graph.select(null);canvas.focus();}
+    else if(b.dataset.cmd!=null){if(shownNode)showSource(shownNode,Number(b.dataset.cmd));}
+    else if(b.dataset.xretry!=null){if(shownNode)showSource(shownNode,shownWant);}
+    else if(b.dataset.timeline!=null)showCommand(Number(b.dataset.timeline));
+    else if(b.dataset.id!=null)graph.select(b.dataset.id);};
+  // Opened from the timeline: select that element.
+  if(pendingNodes){const ids=pendingNodes;pendingNodes=null;
+    if(!ids.some(id=>graph.select(id))){detail.innerHTML='<button class="close" type="button" aria-label="Close details">×</button><h3>Not in the graph</h3><div class="ty">'+(ids.fromNote?'the element this operator note was attached to is not in the current graph; the note keeps its snapshot in the Notes view':'this value was found in the output, but the relationship graph has no element for it')+'</div>';detail.classList.add('show');}}
+  // Direct relations of the selected element; each one selects that element.
+  function relations(id){
+    const list=[];
+    for(const e of edges){if(e.source===id&&byId.has(e.target))list.push([e.target,`${esc(String(e.type||'related'))} →`,'out']);
+      else if(e.target===id&&byId.has(e.source))list.push([e.source,`← ${esc(String(e.type||'related'))}`,'in']);}
+    if(!list.length)return'';
+    const shown=list.slice(0,40).map(([other,t,dir])=>`<button type="button" data-id="${esc(String(other))}"><span class="et">${dir==='out'?t+' ':''}</span>${esc(nameOf(other))}<span class="et">${dir==='in'?' '+t:''}</span></button>`).join('');
+    return `<div class="rel"><div class="ty">relationships (${list.length})</div>${shown}${list.length>40?`<div class="ty">+${list.length-40} more</div>`:''}</div>`;
+  }
+}
+
+// Leaving the graph view (or the page switching to another session's view)
+// retires the current graph: pending replies of it are dropped, and its detail
+// panel is emptied so stale content cannot reappear when the view returns.
+function leaveGraph(){
+  graphRequest++;
+  if(graph){graph.destroy();graph=null;}
+  const detail=document.getElementById('gdetail');detail.classList.remove('show');detail.innerHTML='';
+}
+
+loadSessions();
+</script>
+</body>
+</html>
+
+

@@ -1,0 +1,25 @@
+{"seq":1,"t_ns":1043100,"ev":"start","off":0,"rec":false,"token":"native-cmd-test-token","session_id":1}
+{"seq":2,"t_ns":62852700,"ev":"output","off":0,"rec":true,"raw":"G1s/OTAwMWgbWz8xMDA0aA=="}
+{"seq":3,"t_ns":79403700,"ev":"output","off":16,"rec":true,"raw":"G1s/MjVsG1syShtbbRtbSBtdMDtDOlxXaW5kb3dzXHN5c3RlbTMyXGNtZC5leGUgLSBjaGNwICA2NTAwMQcbWz8yNWg="}
+{"seq":4,"t_ns":119380900,"ev":"output","off":84,"rec":true,"raw":"G10wO0M6XFdpbmRvd3Ncc3lzdGVtMzJcY21kLmV4ZQc="}
+{"seq":5,"t_ns":122170000,"ev":"output","off":116,"rec":true,"raw":"G102OTc7bmF0aXZlLWNtZC10ZXN0LXRva2VuO0EH"}
+{"seq":6,"t_ns":132458100,"ev":"output","off":146,"rec":true,"raw":"DQpDOlxVc2Vyc1x1c2VyMVxEb2N1bWVudHNcU3ludGhcMjAyNi0xMC0yNVxsYWJcd29ya1xmaWN0aW9uYWwtd29ya3NwYWNlMFxmaXh0dXJlLWNhcHR1cmUtZGlyMVxwZW50cmFpbFxpbnRlcm5hbFxjYXB0dXJlPg=="}
+{"seq":7,"t_ns":137502200,"ev":"input","off":267,"rec":true,"raw":"ZWNobyBMRk5BVF5fT05FCg==","dec":"ZWNobyBMRk5BVF5fT05FCg=="}
+{"seq":8,"t_ns":137502200,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":0,"Command":"echo LFNAT^_ONE","Cwd":"","StartedAt":1793250983826371900,"EndedAt":0,"ExitCode":-1,"OutStartOff":267,"OutEndOff":0,"Complete":false,"EndReason":""}}
+{"seq":9,"t_ns":146435900,"ev":"output","off":267,"rec":true,"raw":"ZWNobyBMRk5BVF5fT05F"}
+{"seq":10,"t_ns":1147180500,"ev":"input","off":282,"rec":true,"raw":"DQ==","dec":"DQ=="}
+{"seq":11,"t_ns":1147180500,"ev":"output","off":282,"rec":true,"raw":"DQo="}
+{"seq":12,"t_ns":1152537400,"ev":"output","off":284,"rec":true,"raw":"G102OTc7bmF0aXZlLWNtZC10ZXN0LXRva2VuO0EH"}
+{"seq":13,"t_ns":1152537400,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":0,"Command":"echo LFNAT^_ONE","Cwd":"","StartedAt":1793250983826371900,"EndedAt":1793250984841407100,"ExitCode":-1,"OutStartOff":267,"OutEndOff":284,"Complete":false,"EndReason":""}}
+{"seq":14,"t_ns":1161958900,"ev":"output","off":314,"rec":true,"raw":"G1s/MjVsTEZOQVRfT05FG1s2OzFIQzpcVXNlcnNcdXNlcjFcRG9jdW1lbnRzXFN5bnRoXDIwMjYtMTAtMjVcbGFiXHdvcmtcZmljdGlvbmFsLXdvcmtzcGFjZTBcZml4dHVyZS1jYXB0dXJlLWRpcjFccGVudHJhaWxcaW50ZXJuYWxcY2FwdHVyZT4bWz8yNWg="}
+{"seq":15,"t_ns":1164726500,"ev":"input","off":460,"rec":true,"raw":"ZWNobyBMRk5BVF5fRU5EDQ==","dec":"ZWNobyBMRk5BVF5fRU5EDQ=="}
+{"seq":16,"t_ns":1164726500,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":1,"Command":"echo LFNAT^_END","Cwd":"","StartedAt":1793250984853596200,"EndedAt":0,"ExitCode":-1,"OutStartOff":460,"OutEndOff":0,"Complete":false,"EndReason":""}}
+{"seq":17,"t_ns":1169589900,"ev":"output","off":460,"rec":true,"raw":"G102OTc7bmF0aXZlLWNtZC10ZXN0LXRva2VuO0EH"}
+{"seq":18,"t_ns":1169969500,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":1,"Command":"echo LFNAT^_END","Cwd":"","StartedAt":1793250984853596200,"EndedAt":1793250984858839200,"ExitCode":-1,"OutStartOff":460,"OutEndOff":460,"Complete":false,"EndReason":""}}
+{"seq":19,"t_ns":1177251000,"ev":"output","off":490,"rec":true,"raw":"G1s/MjVsZWNobyBMRk5BVF5fRU5EDQpMRk5BVF9FTkQbWzEwOzFIQzpcVXNlcnNcdXNlcjFcRG9jdW1lbnRzXFN5bnRoXDIwMjYtMTAtMjVcbGFiXHdvcmtcZmljdGlvbmFsLXdvcmtzcGFjZTBcZml4dHVyZS1jYXB0dXJlLWRpcjFccGVudHJhaWxcaW50ZXJuYWxcY2FwdHVyZT4bWz8yNWg="}
+{"seq":20,"t_ns":1197715900,"ev":"input","off":654,"rec":true,"raw":"ZXhpdA0=","dec":"ZXhpdA0="}
+{"seq":21,"t_ns":1197715900,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":2,"Command":"exit","Cwd":"","StartedAt":1793250984886585600,"EndedAt":0,"ExitCode":-1,"OutStartOff":654,"OutEndOff":0,"Complete":false,"EndReason":""}}
+{"seq":22,"t_ns":1200956400,"ev":"output","off":654,"rec":true,"raw":"ZXhpdA0K"}
+{"seq":23,"t_ns":1206521800,"ev":"output","off":660,"rec":true,"raw":"G1s/OTAwMWwbWz8xMDA0bA=="}
+{"seq":24,"t_ns":1227713100,"ev":"close","off":676,"rec":false}
+{"seq":25,"t_ns":1228129000,"ev":"write","off":0,"rec":false,"cmd":{"SessionID":1,"Index":2,"Command":"exit","Cwd":"","StartedAt":1793250984886585600,"EndedAt":1793250984916998700,"ExitCode":-1,"OutStartOff":654,"OutEndOff":676,"Complete":false,"EndReason":"session_end"}}
