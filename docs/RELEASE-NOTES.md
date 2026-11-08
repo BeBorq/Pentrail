@@ -26,6 +26,25 @@ test scope. Known limitations remain documented in LIMITATIONS.md.
   note writes are unchanged. Note saves are still revision-checked, have no
   automatic retry and are never reported as saved without confirmation.
 
+### Windows: one session, several path spellings
+
+- The private named pipe of a session or of the key agent is now named after
+  the long-path spelling of its endpoint (case-insensitive). Before, a server
+  started with an 8.3 short spelling (for example a `TEMP` under
+  `C:\Users\RUNNER~1`) and a client using the long spelling computed
+  different pipe names, so `pentrail off` could not reach a live session,
+  treated it as ended and reported success while it kept recording.
+- A client still finds a session of an older version that named its pipe
+  after another spelling of the same path.
+- `off`, `on`, `flush`, `backup` and the checks before
+  switching databases no longer skip an endpoint whose pipe is missing
+  unless its end is confirmed (no endpoint file, no such process, the process
+  has exited, or its PID was reused). A running writer, or one that cannot be
+  checked (for example a locked or invalid endpoint file), is reported as not
+  reached. Recording for new terminals is still disabled by `off`.
+- A client also finds an older session whose pipe was named after the short
+  directory and the long file name, after that file got its own 8.3 alias.
+
 ### Security and dependencies
 
 - `golang.org/x/sys` upgraded from v0.30.0 to v0.44.0 (GO-2026-5024 /

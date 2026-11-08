@@ -306,13 +306,26 @@ func isOwnImage(img string, own []string) bool {
 	return false
 }
 
+// processImage returns the full path of the process's image file in long
+// form. QueryFullProcessImageName reports the spelling the process was started
+// with, which can contain 8.3 components ("RUNNER~1"); the copies in own are
+// long paths. Converting the reported path with GetLongPathName names the same
+// file in the same form, so the exact (case-insensitive) comparison with own
+// still accepts only that file: a different file never gets the same long
+// path. If the conversion fails, the reported path is returned unchanged and
+// can only match an identical spelling.
 func processImage(h windows.Handle) (string, error) {
 	buf := make([]uint16, 32768)
 	n := uint32(len(buf))
 	if err := windows.QueryFullProcessImageName(h, 0, &buf[0], &n); err != nil {
 		return "", err
 	}
-	return windows.UTF16ToString(buf[:n]), nil
+	img := windows.UTF16ToString(buf[:n])
+	long := make([]uint16, 32768)
+	if m, err := windows.GetLongPathName(&buf[0], &long[0], uint32(len(long))); err == nil && m > 0 && int(m) < len(long) {
+		img = windows.UTF16ToString(long[:m])
+	}
+	return img, nil
 }
 
 // privateCopy copies src into a new private directory of this test and
@@ -434,6 +447,16 @@ func TestUpgradeCleanupNeverEndsForeignImage(t *testing.T) {
 	if !alive() {
 		t.Fatal("cleanup ended a process it had not admitted")
 	}
+	// The same bytes under the same file name in another directory are another
+	// file: never admitted (the check is the image path, not its name or
+	// content).
+	twin := filepath.Join(t.TempDir(), filepath.Base(self))
+	if b, err := os.ReadFile(self); err != nil || os.WriteFile(twin, b, 0o700) != nil {
+		t.Fatal("copy of the test binary")
+	}
+	if err := admitOwn(cmd.Process.Pid, longPath(t, twin), []string{longPath(t, twin)}, "x", servers); err == nil || len(servers) != 0 {
+		t.Fatalf("a process was admitted for a copy of its image: %v %v", err, servers)
+	}
 	if err := admitOwn(cmd.Process.Pid, self, []string{self}, "x", servers); err != nil || len(servers) != 1 {
 		t.Fatalf("own process not admitted: %v", err)
 	}
@@ -443,4 +466,59 @@ func TestUpgradeCleanupNeverEndsForeignImage(t *testing.T) {
 	case <-time.After(10 * time.Second):
 		t.Fatal("cleanup did not end the admitted process")
 	}
+}
+
+// A process started through the 8.3 short spelling of its image reports that
+// spelling; it is still this test's own image and is admitted, while a
+// foreign image is still refused. Skipped only where the file system has no
+// short names; on GitHub Actions (short temp directory) it must run.
+func TestUpgradeAdmitsOwnImageThroughShortAlias(t *testing.T) {
+	if os.Getenv("PENTRAIL_UPGRADE_SLEEPER") == "1" {
+		time.Sleep(60 * time.Second)
+		return
+	}
+	self := longPath(t, os.Args[0])
+	short := shortPathOf(t, self)
+	if strings.EqualFold(short, self) {
+		if os.Getenv("GITHUB_ACTIONS") == "true" {
+			t.Fatalf("no 8.3 alias for %s on the CI runner; this case must run there", self)
+		}
+		t.Skip("no 8.3 short name for the test binary on this file system")
+	}
+	cmd := exec.Command(short, "-test.run=^TestUpgradeAdmitsOwnImageThroughShortAlias$", "-test.count=1")
+	cmd.Env = append(os.Environ(), "PENTRAIL_UPGRADE_SLEEPER=1")
+	if err := cmd.Start(); err != nil {
+		t.Fatal(err)
+	}
+	exited := make(chan struct{})
+	go func() { cmd.Wait(); close(exited) }()
+	t.Cleanup(func() { cmd.Process.Kill(); <-exited }) // this test's own child only
+	servers := map[string]windows.Handle{}
+	foreign := filepath.Join(t.TempDir(), "not-this-process.exe")
+	if err := admitOwn(cmd.Process.Pid, foreign, []string{foreign}, "x", servers); err == nil || len(servers) != 0 {
+		t.Fatalf("a process with another image was admitted: %v", err)
+	}
+	if err := admitOwn(cmd.Process.Pid, self, []string{self}, "x", servers); err != nil || len(servers) != 1 {
+		t.Fatalf("own process started as %s not admitted: %v", short, err)
+	}
+	cleanupOwnServers(t.TempDir(), []string{self}, servers)
+	select {
+	case <-exited:
+	case <-time.After(10 * time.Second):
+		t.Fatal("cleanup did not end the admitted process")
+	}
+}
+
+func shortPathOf(t *testing.T, p string) string {
+	t.Helper()
+	u, err := windows.UTF16PtrFromString(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	buf := make([]uint16, 32768)
+	n, err := windows.GetShortPathName(u, &buf[0], uint32(len(buf)))
+	if err != nil || n == 0 || int(n) > len(buf) {
+		t.Fatalf("short path of %s: %v", p, err)
+	}
+	return windows.UTF16ToString(buf[:n])
 }

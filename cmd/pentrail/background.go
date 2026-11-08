@@ -50,8 +50,14 @@ func controlledSessions(db string) ([]string, error) {
 	for _, path := range sessionSockets(db) {
 		state, e := sessionio.RequestControl(path, "status")
 		if e != nil {
+			// "not found" means an ended session only if the process that
+			// listened there is confirmed gone; a live one that cannot be
+			// reached, or one that cannot be checked, is a failure, never a
+			// silent skip.
 			if localipc.IsStaleError(e) {
-				continue
+				if e = staleEndpoint(path, e); e == nil {
+					continue
+				}
 			}
 			failures = append(failures, fmt.Errorf("%s: %w", filepath.Base(path), e))
 			continue
@@ -82,6 +88,20 @@ func checkNoRecordingSessions(db string) error {
 	}
 	return nil
 }
+
+// staleEndpoint decides about an endpoint whose pipe or socket was not found
+// (dialErr): nil if its session has ended (confirmed), otherwise the error to
+// report — the session's server is still running, or it cannot be checked.
+func staleEndpoint(path string, dialErr error) error {
+	running, err := localipc.EndpointOwnerRunning(path)
+	if err != nil {
+		return fmt.Errorf("session endpoint not reachable (%v) and its server cannot be checked: %w", dialErr, err)
+	}
+	if running {
+		return fmt.Errorf("session server is running but its endpoint cannot be reached: %w", dialErr)
+	}
+	return nil
+}
 func controlAll(db, op string) error {
 	paths, e := controlledSessions(db)
 	var failures []error
@@ -91,7 +111,9 @@ func controlAll(db, op string) error {
 	for _, path := range paths {
 		if _, e := sessionio.RequestControl(path, op); e != nil {
 			if localipc.IsStaleError(e) {
-				continue
+				if e = staleEndpoint(path, e); e == nil {
+					continue
+				}
 			}
 			failures = append(failures, e)
 		}
