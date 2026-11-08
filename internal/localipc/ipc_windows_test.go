@@ -194,17 +194,9 @@ func TestEndpointOwnerRunning(t *testing.T) {
 	unknown(empty, "an empty file")
 	locked := filepath.Join(dir, "locked.sock")
 	os.WriteFile(locked, []byte(strconv.Itoa(os.Getpid())), 0o600)
-	u, _ := windows.UTF16PtrFromString(locked)
-	h, err := windows.CreateFile(u, windows.GENERIC_READ, 0, nil, windows.OPEN_EXISTING, windows.FILE_ATTRIBUTE_NORMAL, 0)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if _, err := os.ReadFile(locked); err == nil {
-		windows.CloseHandle(h)
-		t.Fatal("the file is not locked")
-	}
+	unlock := lockMarkerForRead(t, locked) // fails the test if os.ReadFile still succeeds
 	unknown(locked, "a locked file of a running writer")
-	windows.CloseHandle(h)
+	unlock() // fails the test if the marker is not readable again
 	if running, err := EndpointOwnerRunning(locked); !running || err != nil {
 		t.Fatalf("after the lock is released: %v %v", running, err)
 	}
@@ -260,6 +252,61 @@ func TestDialReachesOldServerWhoseLeafGotShortAlias(t *testing.T) {
 		c.Close()
 		if string(b) != "old" {
 			t.Fatalf("%s: read %q", client, b)
+		}
+	}
+}
+
+// lockMarkerForRead makes path unreadable through any other handle, also in
+// this process: a separately opened, share-compatible handle takes an
+// exclusive byte-range lock (LockFileEx with LOCKFILE_EXCLUSIVE_LOCK |
+// LOCKFILE_FAIL_IMMEDIATELY) over the whole marker and well beyond its end.
+// ReadFile through another handle then fails with ERROR_LOCK_VIOLATION
+// (https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-lockfileex).
+// A share mode of 0 alone is not enough: on the hosted Windows runner the
+// marker was still readable. The test checks that os.ReadFile really fails
+// while locked; the returned function unlocks and closes the handle and checks
+// that the marker is readable again.
+func lockMarkerForRead(t *testing.T, path string) (unlock func()) {
+	t.Helper()
+	p, err := windows.UTF16PtrFromString(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	h, err := windows.CreateFile(p, windows.GENERIC_READ|windows.GENERIC_WRITE,
+		windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE,
+		nil, windows.OPEN_EXISTING, windows.FILE_ATTRIBUTE_NORMAL, 0) // synchronous handle
+	if err != nil {
+		t.Fatal(err)
+	}
+	const span = 1 << 20          // nonempty, from offset 0, covers the whole marker
+	ol := new(windows.Overlapped) // Offset 0; required by LockFileEx also for synchronous handles
+	if err := windows.LockFileEx(h, windows.LOCKFILE_EXCLUSIVE_LOCK|windows.LOCKFILE_FAIL_IMMEDIATELY, 0, span, 0, ol); err != nil {
+		windows.CloseHandle(h)
+		t.Fatalf("lock %s: %v", path, err)
+	}
+	done := false
+	release := func() {
+		if done {
+			return
+		}
+		done = true
+		uerr := windows.UnlockFileEx(h, 0, span, 0, new(windows.Overlapped))
+		cerr := windows.CloseHandle(h)
+		if uerr != nil || cerr != nil {
+			t.Errorf("unlock %s: %v %v", path, uerr, cerr)
+		}
+	}
+	t.Cleanup(release)
+	if _, err := os.ReadFile(path); err == nil {
+		release()
+		t.Fatalf("probe did not make marker unreadable: %s is still readable while locked", path)
+	} else if !errors.Is(err, windows.ERROR_LOCK_VIOLATION) {
+		t.Logf("read while locked: %v", err)
+	}
+	return func() {
+		release()
+		if _, err := os.ReadFile(path); err != nil {
+			t.Fatalf("%s is not readable after unlock: %v", path, err)
 		}
 	}
 }
