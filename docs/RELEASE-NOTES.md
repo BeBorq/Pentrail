@@ -45,6 +45,15 @@ test scope. Known limitations remain documented in LIMITATIONS.md.
 - A client also finds an older session whose pipe was named after the short
   directory and the long file name, after that file got its own 8.3 alias.
 
+### Notes while another process writes
+
+- A note change no longer fails with "database is locked" when another
+  process (for example a recording session) holds the database write lock for
+  longer than SQLite's busy timeout. The change was not written in that case;
+  it is now tried again from the start, with backoff, for up to 30 seconds,
+  and then reported as failed. Revision checks apply on every attempt, and
+  conflicts and other errors are returned at once.
+
 ### Security and dependencies
 
 - `golang.org/x/sys` upgraded from v0.30.0 to v0.44.0 (GO-2026-5024 /

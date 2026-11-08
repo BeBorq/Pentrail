@@ -211,7 +211,36 @@ var testHookNoteWritten func(id string)
 // used, as the store has a single connection. A change that touched no row
 // is rolled back and reported as ErrNoteConflict with the current note (read
 // in the same transaction) or as ErrNoteNotFound.
+//
+// While another connection (a recording session server, a second viewer)
+// holds the database write lock for longer than SQLite's busy timeout, the
+// change fails with SQLITE_BUSY/LOCKED ("database is locked") before anything
+// is committed: the transaction is rolled back. Such a change is tried again
+// from the start, with backoff, until it succeeds, fails otherwise, or
+// noteBusyWindow has passed; then the lock error is returned. This is not a
+// blind retry: a lock error means the change was not written, and the
+// revision guard is evaluated again on each attempt. Every other error,
+// ErrNoteConflict and ErrNoteNotFound are returned at once.
 func (s *Store) noteWrite(sessionID int64, id string, change func(tx *sql.Tx) (sql.Result, error)) (Note, error) {
+	start := time.Now()
+	backoff := 50 * time.Millisecond
+	for {
+		n, err := s.noteWriteOnce(sessionID, id, change)
+		if err == nil || !isBusy(err) || time.Since(start) >= noteBusyWindow {
+			return n, err
+		}
+		time.Sleep(backoff)
+		if backoff < time.Second {
+			backoff *= 2
+		}
+	}
+}
+
+// noteBusyWindow bounds how long a note change waits for another writer's
+// lock (tests shorten it). A viewer save shows "Saving" meanwhile.
+var noteBusyWindow = 30 * time.Second
+
+func (s *Store) noteWriteOnce(sessionID int64, id string, change func(tx *sql.Tx) (sql.Result, error)) (Note, error) {
 	tx, err := s.db.Begin()
 	if err != nil {
 		return Note{}, err
