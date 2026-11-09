@@ -13,7 +13,6 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
-	"time"
 )
 
 func spawnWithKey(kind string, args []string, key []byte, logPath string) error {
@@ -144,8 +143,7 @@ func cmdSetup(args []string) error {
 	}
 	block := fmt.Sprintf("\n%s\nexport PATH=\"$HOME/.local/bin:$PATH\"\nif [ -z \"$PENTRAIL_AUTOSTART_SKIP\" ] && [ -t 0 ] && [ -t 1 ]; then\n  case $- in *i*) if %s __auto-check >/dev/null 2>&1; then exec %s start --auto --shell %s; fi;; esac\nfi\nunset PENTRAIL_AUTOSTART_SKIP\n%s\n", blockStart, shellQuote(bin), shellQuote(bin), shellQuote(path), blockEnd)
 	if len(old) > 0 {
-		backup := rc + fmt.Sprintf(".pentrail-backup-%d", time.Now().UnixNano())
-		if err = os.WriteFile(backup, old, 0600); err != nil {
+		if _, err = writeStartupBackup(rc, old); err != nil {
 			return err
 		}
 	}

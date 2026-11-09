@@ -44,3 +44,30 @@ func TestSetupIsOptInAndIdempotent(t *testing.T) {
 		t.Fatal("missing rc backups")
 	}
 }
+
+// Two setups within one clock tick must keep the backup of the user's original
+// file; the second backup used to replace it.
+func TestSetupKeepsOriginalRCBackupWithinOneClockTick(t *testing.T) {
+	freezeBackupClock(t)
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	t.Setenv("PENTRAIL_DB", "")
+	rc := filepath.Join(home, ".bashrc")
+	original := "alias ll='ls -la'\n"
+	if err := os.WriteFile(rc, []byte(original), 0600); err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < 2; i++ {
+		if err := cmdSetup([]string{"bash", "--allow-plain"}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	backups, _ := filepath.Glob(rc + ".pentrail-backup-*")
+	if len(backups) != 2 {
+		t.Fatalf("rc backups %v", backups)
+	}
+	first, err := os.ReadFile(backups[0])
+	if err != nil || string(first) != original {
+		t.Fatalf("the backup of the original rc file: %q %v", first, err)
+	}
+}

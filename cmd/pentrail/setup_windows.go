@@ -18,7 +18,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"time"
 	"unicode/utf16"
 	"unicode/utf8"
 	"unsafe"
@@ -197,7 +196,7 @@ func setupPSProfile(path, bin, shell string, custom bool) error {
 		text = text[:a] + text[a+b+len(blockEnd):]
 	}
 	if len(old) > 0 {
-		if e = os.WriteFile(path+fmt.Sprintf(".pentrail-backup-%d", time.Now().UnixNano()), old, 0600); e != nil {
+		if _, e = writeStartupBackup(path, old); e != nil {
 			return e
 		}
 	}

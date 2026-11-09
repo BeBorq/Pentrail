@@ -59,3 +59,30 @@ func TestWindowsProfileLocationQuery(t *testing.T) {
 		}
 	}
 }
+
+// Deterministic form of the windows-2025 CI failure "missing backups": both
+// setups get the same timestamp; the original UTF-16 profile backup must stay.
+func TestWindowsSetupKeepsOriginalProfileBackupWithinOneClockTick(t *testing.T) {
+	freezeBackupClock(t)
+	path := filepath.Join(t.TempDir(), "profil.ps1")
+	b := []byte{255, 254}
+	for _, v := range utf16.Encode([]rune("$global:Polish = 'żółć'\r\n")) {
+		b = binary.LittleEndian.AppendUint16(b, v)
+	}
+	if e := os.WriteFile(path, b, 0600); e != nil {
+		t.Fatal(e)
+	}
+	for i := 0; i < 2; i++ {
+		if e := setupPSProfile(path, `C:\Users\test name\pentrail.exe`, `C:\Windows\powershell.exe`, true); e != nil {
+			t.Fatal(e)
+		}
+	}
+	backups, _ := filepath.Glob(path + ".pentrail-backup-*")
+	if len(backups) != 2 {
+		t.Fatalf("profile backups %v", backups)
+	}
+	first, e := os.ReadFile(backups[0])
+	if e != nil || !bytes.Equal(first, b) {
+		t.Fatalf("the backup of the original UTF-16 profile changed: %v", e)
+	}
+}

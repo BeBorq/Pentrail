@@ -26,7 +26,7 @@ import (
 	"github.com/BeBorq/Pentrail/internal/view"
 )
 
-const version = "0.6.29-durable"
+const version = "0.6.29-durable.1"
 
 func main() {
 	if len(os.Args) < 2 {
