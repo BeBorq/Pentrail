@@ -87,7 +87,8 @@ and web pages open in your browser.
 
 Release builds use the Go toolchain named in `go.mod` (`toolchain go1.27.3`)
 and the module versions in `go.sum`; `golang.org/x/sys` is at v0.44.0 or
-later because of GO-2026-5024 (CVE-2026-39824). Before a release the
+later because of GO-2026-5024 (CVE-2026-39824); it is v0.49.0, the version
+that `github.com/Microsoft/go-winio` v0.6.4 requires. Before a release the
 binaries are checked with `govulncheck` (binary mode). Its scope and limits:
 
 - It covers the Go standard library and the Go modules linked into the

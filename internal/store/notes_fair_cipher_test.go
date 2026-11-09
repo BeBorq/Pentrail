@@ -83,6 +83,17 @@ func TestCaptureWriteIsNotStarvedByBackToBackNoteChanges(t *testing.T) {
 	if b, e := os.ReadFile(commitsFile); e != nil || json.Unmarshal(b, &commits) != nil || len(commits) != 12 {
 		t.Fatalf("note commit times: %v %d", e, len(commits))
 	}
+	// The criterion below is only meaningful if the recorder really wrote
+	// while the note changes were made: it must have written before the
+	// first note commit and still been writing after the last one, so every
+	// note commit fell into the recorder's activity. (Zero writes, or writes
+	// only before or after the note changes, would pass it vacuously.)
+	if len(writes) == 0 {
+		t.Fatal("the recorder made no capture write")
+	}
+	if first, last := commits[0], commits[len(commits)-1]; writes[0].a >= first || writes[len(writes)-1].b <= last {
+		t.Fatalf("the recorder's writes (%d, %d..%d) do not span the note changes (%d..%d)", len(writes), writes[0].a, writes[len(writes)-1].b, first, last)
+	}
 	worst, worstWait := 0, int64(0)
 	for _, w := range writes {
 		n := 0

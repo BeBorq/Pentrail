@@ -13,7 +13,7 @@ system administration — without copying it by hand.
 
 ![Timeline of a recorded session with fictional data](docs/images/timeline.png)
 
-> **Status: release candidate.** Version 0.6.29-durable is a candidate, not a
+> **Status: release candidate.** Version 0.6.29-durable.1 is a candidate, not a
 > stable release. The packages are **not code-signed**; verify them with the
 > published SHA-256 checksums. The known limits of capture and masking are
 > listed in [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
@@ -105,7 +105,7 @@ the tagged sources ([docs/RELEASING.md](docs/RELEASING.md)).
 ## Building from source
 
 Go 1.27.3 (the version in the `toolchain` line of `go.mod`; `go.mod` requires
-at least Go 1.25.0) and a C compiler (CGO) are needed for the encrypted build:
+at least Go 1.26.0) and a C compiler (CGO) are needed for the encrypted build:
 
 ```sh
 CGO_ENABLED=1 go build -tags sqlcipher -o pentrail ./cmd/pentrail

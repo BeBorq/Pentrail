@@ -6,7 +6,7 @@ do not change your shell profiles, registry values or Pentrail database.
 ## Requirements
 
 - Go 1.27.3 and a C compiler for CGO (`gcc`/`clang` on Linux, MinGW-w64
-  `gcc` on Windows). `go.mod` requires at least Go 1.25.0 and names
+  `gcc` on Windows). `go.mod` requires at least Go 1.26.0 and names
   `toolchain go1.27.3`: with an older local Go, `GOTOOLCHAIN=auto` (the
   default) downloads Go 1.27.3, and `GOTOOLCHAIN=local` uses the local Go.
 - Python 3.8+ for the release script tests.

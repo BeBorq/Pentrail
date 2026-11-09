@@ -23,7 +23,7 @@ complete or saved unless it was.
 
 ## Development setup
 
-- Go 1.27.3 (`toolchain` in `go.mod`; at least Go 1.25.0), a C compiler for CGO (`gcc` or `clang` on Linux,
+- Go 1.27.3 (`toolchain` in `go.mod`; at least Go 1.26.0), a C compiler for CGO (`gcc` or `clang` on Linux,
   MinGW-w64 `gcc` on Windows).
 - Node.js 20 or newer, for the viewer's JavaScript tests (run by `go test`;
   they are skipped when `node` is not on `PATH`).

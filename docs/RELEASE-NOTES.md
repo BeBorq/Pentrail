@@ -15,6 +15,15 @@ packages are unsigned; verify them with the published SHA-256 checksums.
   Windows CI runner). Consecutive note changes of one process now leave the
   lock free for at least 200 ms. Nothing is skipped or reordered; durability,
   encryption and revision checks are unchanged.
+- Windows: `github.com/Microsoft/go-winio` upgraded from v0.6.2 to v0.6.4.
+  In v0.6.2, closing a pipe listener while a client connect was in flight
+  could consume the single close signal and hang `Close` forever
+  (go-winio issue #357; fixed by PR #388 in v0.6.3). A session endpoint's
+  listener could therefore hang on shutdown; a Windows CI run hung in a
+  test's listener `Close`. v0.6.4 requires `golang.org/x/sys` v0.49.0 (was
+  v0.44.0) and Go 1.26.0, so `go.mod` now requires at least Go 1.26.0. The
+  release toolchain stays Go 1.27.3. The pipe names, security descriptor,
+  8.3/long-path fallback and endpoint checks are unchanged.
 - Deterministic regressions freeze the clock and verify original bytes,
   unique names, idempotent setup and backup errors. Existing tests and timing
   guards remain unchanged.
