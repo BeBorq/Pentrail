@@ -376,6 +376,8 @@ type Store struct {
 	privacyMu              sync.Mutex
 	commandMu              sync.Mutex
 	privacy                map[int64]*privacyStream
+	noteMu                 sync.Mutex // serializes note changes; see noteWrite
+	lastNoteCommit         time.Time  // when this Store last committed a note change
 	stopping               chan struct{}
 	syncCh                 chan chan error
 

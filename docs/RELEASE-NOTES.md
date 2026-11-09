@@ -8,6 +8,13 @@ packages are unsigned; verify them with the published SHA-256 checksums.
 - Startup-file backups on Windows and Linux now use exclusive file creation.
   Repeated setup within the same clock tick keeps every backup, including the
   original UTF-16 PowerShell profile, instead of replacing an earlier copy.
+- Note changes made in quick succession no longer keep a recording session's
+  capture write waiting. SQLite has no fair lock queue, and back-to-back note
+  changes from another process could take the write lock again after every
+  commit, so one capture write waited through all of them (2.26 s on a
+  Windows CI runner). Consecutive note changes of one process now leave the
+  lock free for at least 200 ms. Nothing is skipped or reordered; durability,
+  encryption and revision checks are unchanged.
 - Deterministic regressions freeze the clock and verify original bytes,
   unique names, idempotent setup and backup errors. Existing tests and timing
   guards remain unchanged.

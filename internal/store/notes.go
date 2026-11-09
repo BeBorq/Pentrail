@@ -221,7 +221,38 @@ var testHookNoteWritten func(id string)
 // blind retry: a lock error means the change was not written, and the
 // revision guard is evaluated again on each attempt. Every other error,
 // ErrNoteConflict and ErrNoteNotFound are returned at once.
+//
+// Consecutive note changes of one Store leave the write lock free for at
+// least noteWriteGap between them. SQLite has no fair lock queue: a waiting
+// writer (the recording session's capture write) polls the lock from its busy
+// handler, sleeping up to 100 ms between attempts. Note changes issued back to
+// back took the lock again within microseconds of each commit, so a capture
+// write could wait through every one of them, for as long as they continued
+// (GitHub Actions windows-2025, SQLCipher: one capture write waited 2.26 s
+// while another process made 60 note changes;
+// TestNotesWrittenByAnotherProcessWhileRecording). The gap is longer than the
+// busy handler's longest sleep, so a waiting writer takes the lock before the
+// next note change. Only a change that follows another one within the gap
+// waits; nothing is skipped and the change itself is unaltered.
 func (s *Store) noteWrite(sessionID int64, id string, change func(tx *sql.Tx) (sql.Result, error)) (Note, error) {
+	s.noteMu.Lock()
+	defer s.noteMu.Unlock()
+	if d := noteWriteGap - time.Since(s.lastNoteCommit); d > 0 {
+		time.Sleep(d)
+	}
+	n, err := s.noteWriteRetry(sessionID, id, change)
+	if err == nil {
+		s.lastNoteCommit = time.Now()
+	}
+	return n, err
+}
+
+// noteWriteGap is the least time between two committed note changes of one
+// Store (see noteWrite). Tests that need the old back-to-back behaviour as a
+// negative control set it to 0.
+var noteWriteGap = 200 * time.Millisecond
+
+func (s *Store) noteWriteRetry(sessionID int64, id string, change func(tx *sql.Tx) (sql.Result, error)) (Note, error) {
 	start := time.Now()
 	backoff := 50 * time.Millisecond
 	for {
